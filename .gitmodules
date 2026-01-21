@@ -1,6 +1,6 @@
-[submodule "themes/PaperMod"]
-	path = themes/PaperMod
-	url = https://github.com/adityatelange/hugo-PaperMod
+[submodule "themes/hugo-book"]
+	path = themes/hugo-book
+	url = https://github.com/alex-shpak/hugo-book
 [submodule "notebooks_src"]
 	path = notebooks_src
 	url = https://github.com/LordFoxFairy/NiKo-NoteBook
