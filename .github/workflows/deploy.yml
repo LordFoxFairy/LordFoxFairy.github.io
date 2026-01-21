@@ -33,7 +33,8 @@ jobs:
     - name: 安装 Hugo
       uses: peaceiris/actions-hugo@v3
       with:
-        hugo-version: '0.112.0'  # 这是Hugo版本，可以用最新稳定版本
+        hugo-version: 'latest'  # 使用最新版本
+        extended: true          # 使用扩展版本支持 SCSS
 
     - name: 生成网站
       run: hugo --minify
