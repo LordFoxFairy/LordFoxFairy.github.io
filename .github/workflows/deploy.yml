@@ -49,3 +49,4 @@ jobs:
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         publish_dir: ./public
+        force_orphan: true  # 强制清除 gh-pages 历史和残留文件，确保干净部署
