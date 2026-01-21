@@ -1,0 +1,7 @@
+[submodule "themes/PaperMod"]
+	path = themes/PaperMod
+	url = https://github.com/adityatelange/hugo-PaperMod
+[submodule "notebooks_src"]
+	path = notebooks_src
+	url = https://github.com/LordFoxFairy/NiKo-NoteBook
+

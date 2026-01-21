@@ -1,0 +1,75 @@
+baseURL = "https://LordFoxFairy.github.io/"
+title = "LordFoxFairy的笔记本"
+theme = "hugo-book"
+languageCode = "zh-cn"
+
+# 内容目录配置
+contentDir = "content"
+
+# Markdown 渲染配置
+[markup]
+  ignoreLogs = ['warning-goldmark-raw-html']
+
+  [markup.goldmark]
+    [markup.goldmark.renderer]
+      unsafe = true
+    [markup.goldmark.parser]
+      autoHeadingID = true
+      autoHeadingIDType = "github"
+    [markup.goldmark.extensions]
+      definitionList = true
+      footnote = true
+      linkify = true
+      strikethrough = true
+      table = true
+      taskList = true
+      typographer = true
+
+  [markup.highlight]
+    codeFences = true
+    guessSyntax = true
+    lineNos = false
+    lineNumbersInTable = false
+    noClasses = false
+    style = "monokai"
+    tabWidth = 4
+
+  [markup.tableOfContents]
+    endLevel = 6
+    ordered = false
+    startLevel = 2
+
+[params]
+  # Book主题配置
+  BookRepo = "https://github.com/LordFoxFairy/LordFoxFairy.github.io"
+  BookCommitPath = "commit"
+  BookEditPath = "edit/main"
+
+  # 启用功能
+  BookSearch = true
+  BookToC = true
+  BookComments = true
+  BookPortableLinks = true
+  BookServiceWorker = false
+
+  # 菜单配置
+  BookMenuBundle = "/menu"
+  BookSection = "notebooks"
+
+  # 主题颜色
+  BookTheme = "auto"
+
+  # 自定义SCSS
+  # assets/custom.scss
+
+
+# 输出配置
+[outputs]
+  home = ["HTML", "RSS", "JSON"]
+  section = ["HTML"]
+
+# 菜单配置
+[menu]
+  # 移除所有多余的顶部导航，通过点击左上角 Logo 回首页
+  # 移除显式的 GitHub 菜单，改用主题内置的 Repo 链接配置
+

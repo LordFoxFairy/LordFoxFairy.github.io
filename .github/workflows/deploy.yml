@@ -1,0 +1,45 @@
+name: Hugo 自动部署
+
+on:
+  push:
+    branches:
+      - main   # 你代码提交的分支，通常是 main 或 master
+  schedule:
+    - cron: '0 17 * * *'  # UTC时间17:00，北京时间凌晨1:00
+  workflow_dispatch:  # 允许手动触发
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: 拉取代码
+      uses: actions/checkout@v3
+      with:
+        submodules: recursive  # 递归拉取所有submodule
+        fetch-depth: 0
+
+    - name: 更新 Submodules
+      run: |
+        git submodule update --init --recursive --remote --force
+        # 进入 notebooks_src 并重置 (如果需要)
+        # cd notebooks_src
+        # git reset --hard origin/main
+        # cd ..
+
+    - name: 构建内容 (处理排序和索引)
+      run: python3 scripts/build_content.py
+
+    - name: 安装 Hugo
+      uses: peaceiris/actions-hugo@v3
+      with:
+        hugo-version: '0.112.0'  # 这是Hugo版本，可以用最新稳定版本
+
+    - name: 生成网站
+      run: hugo --minify
+
+    - name: 部署到 GitHub Pages
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./public
