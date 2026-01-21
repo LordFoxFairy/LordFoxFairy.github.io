@@ -155,6 +155,14 @@ def build_content():
 
         if rel_path == ".":
             create_index(root, "首页", 10, collapse=False, extra_content=readme_content)
+
+            # 同时生成 content/_index.md 以便直接访问根路径时显示内容
+            try:
+                content_root_index = os.path.join(os.path.dirname(DEST_DIR), "_index.md")
+                shutil.copy(os.path.join(root, "_index.md"), content_root_index)
+                print(f"Copied root index to: {content_root_index}")
+            except Exception as e:
+                print(f"Error copying root index: {e}")
         else:
             weight = parse_weight(dirname)
             if weight == 999: weight = 9999
