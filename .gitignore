@@ -1,6 +1,7 @@
 .idea
 .claude
 content/notebooks/
+content/_index.md
 public/
 resources/
 .hugo_build.lock
