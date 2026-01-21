@@ -39,8 +39,10 @@ jobs:
         hugo-version: 'latest'  # 使用最新版本
         extended: true          # 使用扩展版本支持 SCSS
 
-    - name: 生成网站
-      run: hugo --minify
+    - name: 生成网站并创建 .nojekyll
+      run: |
+        hugo --minify
+        touch public/.nojekyll
 
     - name: 部署到 GitHub Pages
       uses: peaceiris/actions-gh-pages@v3
