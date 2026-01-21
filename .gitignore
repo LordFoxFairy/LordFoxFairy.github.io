@@ -4,4 +4,3 @@ content/notebooks/
 public/
 resources/
 .hugo_build.lock
-notebooks_src
