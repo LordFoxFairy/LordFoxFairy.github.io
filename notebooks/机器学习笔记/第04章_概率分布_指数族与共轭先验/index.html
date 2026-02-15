@@ -1,0 +1,310 @@
+<!doctype html><html lang=zh-cn dir=ltr><head><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content='第04章 指数族分布# 前言# 在概率论的浩瀚海洋中,指数族分布 (Exponential Family) 是一座灯塔。它不仅仅是高斯分布、伯努利分布等常见分布的集合,更是它们背后的通用模版。
+为什么线性回归、逻辑回归的梯度公式长得一模一样?为什么最大熵原理最终指向了它?为什么贝叶斯推断需要共轭先验?
+本章将带你深入这个"上帝的指纹",揭示看似无关的算法背后统一的数学本质。学完本章,你将不再是一个个地记忆公式,而是掌握了生成公式的元规则。
+目录# 引言 1. 指数族分布的定义 1.1 从伯努利分布开始 1.2 高斯分布的改写 1.3 指数族的标准形式 1.4 对数配分函数的定义 1.5 常见分布的指数族形式 2. 指数族分布的性质 2.1 一阶导数:期望 2.2 二阶导数:方差 2.3 Fisher 信息矩阵 2.4 最大似然估计的矩匹配 3. 指数族分布与最大熵 3.1 问题:如何选择概率分布? 3.2 熵与最大熵原理 3.3 推导:最大熵分布是指数族 3.4 例子 1:高斯分布 3.5 例子 2:指数分布 3.6 例子 3:离散均匀分布 4. 指数族分布与广义线性模型 (GLM) 4.1 问题:线性回归与逻辑回归的统一 4.2 GLM 的定义 4.3 核心推导:GLM 的统一梯度公式 4.4 Hessian 矩阵:凸性保证 4.5 例子 1:线性回归 (高斯 GLM) 4.6 例子 2:逻辑回归 (伯努利 GLM) 4.7 例子 3:泊松回归 (泊松 GLM) 4.8 GLM 的几何理解 5. 总结 5.1 主要结论 5.2 为什么指数族如此重要? 5.3 关键公式速查表 参考文献 引言# 在机器学习中,我们会遇到各种各样的概率分布:
+'><meta name=theme-color media="(prefers-color-scheme: light)" content="#ffffff"><meta name=theme-color media="(prefers-color-scheme: dark)" content="#343a40"><meta name=color-scheme content="light dark"><meta property="og:url" content="https://LordFoxFairy.github.io/notebooks/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/%E7%AC%AC04%E7%AB%A0_%E6%A6%82%E7%8E%87%E5%88%86%E5%B8%83_%E6%8C%87%E6%95%B0%E6%97%8F%E4%B8%8E%E5%85%B1%E8%BD%AD%E5%85%88%E9%AA%8C/"><meta property="og:site_name" content="LordFoxFairy的笔记本"><meta property="og:title" content="第04章 概率分布 指数族与共轭先验"><meta property="og:description" content='第04章 指数族分布# 前言# 在概率论的浩瀚海洋中,指数族分布 (Exponential Family) 是一座灯塔。它不仅仅是高斯分布、伯努利分布等常见分布的集合,更是它们背后的通用模版。
+为什么线性回归、逻辑回归的梯度公式长得一模一样?为什么最大熵原理最终指向了它?为什么贝叶斯推断需要共轭先验?
+本章将带你深入这个"上帝的指纹",揭示看似无关的算法背后统一的数学本质。学完本章,你将不再是一个个地记忆公式,而是掌握了生成公式的元规则。
+目录# 引言 1. 指数族分布的定义 1.1 从伯努利分布开始 1.2 高斯分布的改写 1.3 指数族的标准形式 1.4 对数配分函数的定义 1.5 常见分布的指数族形式 2. 指数族分布的性质 2.1 一阶导数:期望 2.2 二阶导数:方差 2.3 Fisher 信息矩阵 2.4 最大似然估计的矩匹配 3. 指数族分布与最大熵 3.1 问题:如何选择概率分布? 3.2 熵与最大熵原理 3.3 推导:最大熵分布是指数族 3.4 例子 1:高斯分布 3.5 例子 2:指数分布 3.6 例子 3:离散均匀分布 4. 指数族分布与广义线性模型 (GLM) 4.1 问题:线性回归与逻辑回归的统一 4.2 GLM 的定义 4.3 核心推导:GLM 的统一梯度公式 4.4 Hessian 矩阵:凸性保证 4.5 例子 1:线性回归 (高斯 GLM) 4.6 例子 2:逻辑回归 (伯努利 GLM) 4.7 例子 3:泊松回归 (泊松 GLM) 4.8 GLM 的几何理解 5. 总结 5.1 主要结论 5.2 为什么指数族如此重要? 5.3 关键公式速查表 参考文献 引言# 在机器学习中,我们会遇到各种各样的概率分布:'><meta property="og:locale" content="zh_cn"><meta property="og:type" content="article"><meta property="article:section" content="notebooks"><meta itemprop=name content="第04章 概率分布 指数族与共轭先验"><meta itemprop=description content='第04章 指数族分布# 前言# 在概率论的浩瀚海洋中,指数族分布 (Exponential Family) 是一座灯塔。它不仅仅是高斯分布、伯努利分布等常见分布的集合,更是它们背后的通用模版。
+为什么线性回归、逻辑回归的梯度公式长得一模一样?为什么最大熵原理最终指向了它?为什么贝叶斯推断需要共轭先验?
+本章将带你深入这个"上帝的指纹",揭示看似无关的算法背后统一的数学本质。学完本章,你将不再是一个个地记忆公式,而是掌握了生成公式的元规则。
+目录# 引言 1. 指数族分布的定义 1.1 从伯努利分布开始 1.2 高斯分布的改写 1.3 指数族的标准形式 1.4 对数配分函数的定义 1.5 常见分布的指数族形式 2. 指数族分布的性质 2.1 一阶导数:期望 2.2 二阶导数:方差 2.3 Fisher 信息矩阵 2.4 最大似然估计的矩匹配 3. 指数族分布与最大熵 3.1 问题:如何选择概率分布? 3.2 熵与最大熵原理 3.3 推导:最大熵分布是指数族 3.4 例子 1:高斯分布 3.5 例子 2:指数分布 3.6 例子 3:离散均匀分布 4. 指数族分布与广义线性模型 (GLM) 4.1 问题:线性回归与逻辑回归的统一 4.2 GLM 的定义 4.3 核心推导:GLM 的统一梯度公式 4.4 Hessian 矩阵:凸性保证 4.5 例子 1:线性回归 (高斯 GLM) 4.6 例子 2:逻辑回归 (伯努利 GLM) 4.7 例子 3:泊松回归 (泊松 GLM) 4.8 GLM 的几何理解 5. 总结 5.1 主要结论 5.2 为什么指数族如此重要? 5.3 关键公式速查表 参考文献 引言# 在机器学习中,我们会遇到各种各样的概率分布:'><meta itemprop=wordCount content="2454"><title>第04章 概率分布 指数族与共轭先验 | LordFoxFairy的笔记本</title><link rel=icon href=/favicon.png><link rel=manifest href=/manifest.json><link rel=canonical href=https://LordFoxFairy.github.io/notebooks/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/%E7%AC%AC04%E7%AB%A0_%E6%A6%82%E7%8E%87%E5%88%86%E5%B8%83_%E6%8C%87%E6%95%B0%E6%97%8F%E4%B8%8E%E5%85%B1%E8%BD%AD%E5%85%88%E9%AA%8C/><link rel=stylesheet href=/book.min.6970156cec683193d93c9c4edaf0d56574e4361df2e0c1be4f697ae81c3ba55f.css integrity="sha256-aXAVbOxoMZPZPJxO2vDVZXTkNh3y4MG+T2l66Bw7pV8=" crossorigin=anonymous><script defer src=/fuse.min.js></script><script defer src=/en.search.min.a7a11a812549b6c20d4eeaf4a5a8317847527505f7a0ad3e6824fb320b3128a8.js integrity="sha256-p6EagSVJtsINTur0pagxeEdSdQX3oK0+aCT7MgsxKKg=" crossorigin=anonymous></script></head><body dir=ltr class="book-kind-page book-type-notebooks"><input type=checkbox class="hidden toggle" id=menu-control>
+<input type=checkbox class="hidden toggle" id=toc-control><main class="container flex"><aside class=book-menu><div class=book-menu-content><nav><h2 class=book-brand><a class="flex align-center" href=/><span>LordFoxFairy的笔记本</span></a></h2><div class="book-search hidden"><input id=book-search-input type=text placeholder=Search aria-label=Search maxlength=64 data-hotkeys=s/><div class="book-search-spinner hidden"></div><ul id=book-search-results></ul></div><script>document.querySelector(".book-search").classList.remove("hidden")</script><ul><li><input type=checkbox id=section-8410cdd8ef137d6cb143c08e6db6ba10 class=toggle>
+<label for=section-8410cdd8ef137d6cb143c08e6db6ba10 class=flex><a role=button>LangChain笔记</a>
+<img src=/icons/chevron-right.svg class=book-icon alt=Expand></label><ul><li><a href=/notebooks/langchain%E7%AC%94%E8%AE%B0/%E7%AC%AC%E4%B8%80%E7%AF%87-%E5%9F%BA%E7%A1%80%E8%AE%A4%E7%9F%A5/>第一篇 基础认知</a></li><li><a href=/notebooks/langchain%E7%AC%94%E8%AE%B0/%E7%AC%AC%E4%BA%8C%E7%AF%87-%E5%BF%AB%E9%80%9F%E4%B8%8A%E6%89%8B%E5%AE%9E%E6%88%98/>第二篇 快速上手实战</a></li><li><a href=/notebooks/langchain%E7%AC%94%E8%AE%B0/%E7%AC%AC%E4%B8%89%E7%AF%87-langgraph-%E6%B7%B1%E5%85%A5/>第三篇 LangGraph 深入</a></li><li><a href=/notebooks/langchain%E7%AC%94%E8%AE%B0/%E7%AC%AC%E5%9B%9B%E7%AF%87-rag%E5%9F%BA%E7%A1%80%E7%AF%87langchain%E7%AF%87/>第四篇 RAG基础篇(LangChain篇)</a></li><li><a href=/notebooks/langchain%E7%AC%94%E8%AE%B0/%E7%AC%AC%E5%9B%9B%E7%AF%87-rag%E5%9F%BA%E7%A1%80%E7%AF%87llamaindex%E7%AF%87/>第四篇 RAG基础篇(LlamaIndex篇)</a></li><li><a href=/notebooks/langchain%E7%AC%94%E8%AE%B0/%E7%AC%AC%E4%BA%94%E7%AF%87-rag%E9%AB%98%E7%BA%A7%E7%AF%87langchain%E7%AF%87/>第五篇 RAG高级篇(LangChain篇)</a></li><li><a href=/notebooks/langchain%E7%AC%94%E8%AE%B0/%E7%AC%AC%E4%BA%94%E7%AF%87-rag%E9%AB%98%E7%BA%A7%E7%AF%87llamaindex%E7%AF%87/>第五篇 RAG高级篇(LlamaIndex篇)</a></li><li><a href=/notebooks/langchain%E7%AC%94%E8%AE%B0/%E7%AC%AC%E5%85%AD%E7%AF%87-%E6%96%87%E6%A1%A3%E5%A4%84%E7%90%86%E4%B8%8E%E6%95%B0%E6%8D%AE%E6%B8%85%E6%B4%97/>第六篇 文档处理与数据清洗</a></li><li><a href=/notebooks/langchain%E7%AC%94%E8%AE%B0/%E7%AC%AC%E4%B8%83%E7%AF%87-deep-agents/>第七篇 Deep Agents</a></li><li><a href=/notebooks/langchain%E7%AC%94%E8%AE%B0/%E7%AC%AC%E5%85%AB%E7%AF%87-middleware-%E5%B7%A5%E7%A8%8B%E5%8C%96/>第八篇 Middleware 工程化</a></li><li><a href=/notebooks/langchain%E7%AC%94%E8%AE%B0/%E7%AC%AC%E4%B9%9D%E7%AF%87-agent-%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1/>第九篇 Agent 架构设计</a></li><li><a href=/notebooks/langchain%E7%AC%94%E8%AE%B0/%E7%AC%AC%E5%8D%81%E7%AF%87-%E7%94%9F%E4%BA%A7%E5%AE%9E%E8%B7%B5%E4%B8%8E%E7%9B%91%E6%8E%A7%E8%AF%84%E4%BC%B0/>第十篇 生产实践与监控评估</a></li><li><input type=checkbox id=section-a3e9b1811e5a21dbfddb0753f565cedb class=toggle>
+<label for=section-a3e9b1811e5a21dbfddb0753f565cedb class=flex><a role=button>assets</a>
+<img src=/icons/chevron-right.svg class=book-icon alt=Expand></label><ul></ul></li><li><input type=checkbox id=section-9a64553a000534ad3c81a611c6c29ec2 class=toggle>
+<label for=section-9a64553a000534ad3c81a611c6c29ec2 class=flex><a role=button>code</a>
+<img src=/icons/chevron-right.svg class=book-icon alt=Expand></label><ul><li><input type=checkbox id=section-6fad2589acfdd5d6a1fb55beb392fb77 class=toggle>
+<label for=section-6fad2589acfdd5d6a1fb55beb392fb77 class=flex><a href=/notebooks/langchain%E7%AC%94%E8%AE%B0/code/fasta2a/>fasta2a</a>
+<img src=/icons/chevron-right.svg class=book-icon alt=Expand></label><ul></ul></li></ul></li></ul></li><li><input type=checkbox id=section-ce33306d44f9ed4d296b9a79329bed1c class=toggle>
+<label for=section-ce33306d44f9ed4d296b9a79329bed1c class=flex><a role=button>图像算法笔记</a>
+<img src=/icons/chevron-right.svg class=book-icon alt=Expand></label><ul><li><a href=/notebooks/%E5%9B%BE%E5%83%8F%E7%AE%97%E6%B3%95%E7%AC%94%E8%AE%B0/%E7%AC%AC%E4%B8%80%E7%AF%87_%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%9F%BA%E7%A1%80/>第一篇 机器学习基础</a></li><li><a href=/notebooks/%E5%9B%BE%E5%83%8F%E7%AE%97%E6%B3%95%E7%AC%94%E8%AE%B0/%E7%AC%AC%E4%BA%8C%E7%AF%87_%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E5%9F%BA%E7%A1%80/>第二篇 深度学习基础</a></li><li><a href=/notebooks/%E5%9B%BE%E5%83%8F%E7%AE%97%E6%B3%95%E7%AC%94%E8%AE%B0/%E7%AC%AC%E4%B8%89%E7%AF%87_%E8%AE%A1%E7%AE%97%E6%9C%BA%E8%A7%86%E8%A7%89%E6%A0%B8%E5%BF%83%E6%8A%80%E6%9C%AF/>第三篇 计算机视觉核心技术</a></li><li><a href=/notebooks/%E5%9B%BE%E5%83%8F%E7%AE%97%E6%B3%95%E7%AC%94%E8%AE%B0/%E7%AC%AC%E5%9B%9B%E7%AF%87_%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B%E4%B8%8Eyolo%E7%B3%BB%E5%88%97/>第四篇 目标检测与YOLO系列</a></li><li><a href=/notebooks/%E5%9B%BE%E5%83%8F%E7%AE%97%E6%B3%95%E7%AC%94%E8%AE%B0/%E7%AC%AC%E4%BA%94%E7%AF%87_%E5%9B%BE%E5%83%8F%E5%88%86%E5%89%B2/>第五篇 图像分割</a></li><li><a href=/notebooks/%E5%9B%BE%E5%83%8F%E7%AE%97%E6%B3%95%E7%AC%94%E8%AE%B0/%E7%AC%AC%E5%85%AD%E7%AF%87_%E7%94%9F%E6%88%90%E6%A8%A1%E5%9E%8B/>第六篇 生成模型</a></li><li><a href=/notebooks/%E5%9B%BE%E5%83%8F%E7%AE%97%E6%B3%95%E7%AC%94%E8%AE%B0/%E7%AC%AC%E4%B8%83%E7%AF%87_%E8%A7%86%E8%A7%89%E5%A4%A7%E6%A8%A1%E5%9E%8B/>第七篇 视觉大模型</a></li><li><a href=/notebooks/%E5%9B%BE%E5%83%8F%E7%AE%97%E6%B3%95%E7%AC%94%E8%AE%B0/%E7%AC%AC%E5%85%AB%E7%AF%87_%E7%94%9F%E4%BA%A7%E5%AE%9E%E8%B7%B5/>第八篇 生产实践</a></li></ul></li><li><input type=checkbox id=section-77f5db9e44a9af6dab4403b49a65334f class=toggle>
+<label for=section-77f5db9e44a9af6dab4403b49a65334f class=flex><a href=/notebooks/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E7%AC%94%E8%AE%B0/>大模型笔记</a>
+<img src=/icons/chevron-right.svg class=book-icon alt=Expand></label><ul><li><input type=checkbox id=section-db59738de306cbbe384ad7fbd5cf11b5 class=toggle>
+<label for=section-db59738de306cbbe384ad7fbd5cf11b5 class=flex><a role=button>第一部分：大语言模型基础</a>
+<img src=/icons/chevron-right.svg class=book-icon alt=Expand></label><ul><li><a href=/notebooks/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E7%AC%94%E8%AE%B0/%E7%AC%AC%E4%B8%80%E9%83%A8%E5%88%86%E5%A4%A7%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80/%E7%AC%AC1%E7%AB%A0_%E5%88%9D%E8%AF%86%E5%A4%A7%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B/>第1章 初识大语言模型</a></li><li><a href=/notebooks/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E7%AC%94%E8%AE%B0/%E7%AC%AC%E4%B8%80%E9%83%A8%E5%88%86%E5%A4%A7%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80/%E7%AC%AC2%E7%AB%A0_%E4%B8%8E%E6%A8%A1%E5%9E%8B%E5%AF%B9%E8%AF%9D%E6%8F%90%E7%A4%BA%E5%B7%A5%E7%A8%8B%E5%9F%BA%E7%A1%80/>第2章 与模型对话：提示工程基础</a></li><li><a href=/notebooks/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E7%AC%94%E8%AE%B0/%E7%AC%AC%E4%B8%80%E9%83%A8%E5%88%86%E5%A4%A7%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80/%E7%AC%AC3%E7%AB%A0_%E8%AF%AD%E8%A8%80%E7%9A%84%E5%9F%BA%E7%9F%B3%E5%88%86%E8%AF%8D%E4%B8%8E%E5%B5%8C%E5%85%A5/>第3章 语言的基石：分词与嵌入</a></li></ul></li><li><input type=checkbox id=section-30b17899e420f6a53aa6e578440dd132 class=toggle>
+<label for=section-30b17899e420f6a53aa6e578440dd132 class=flex><a role=button>第二部分：Transformer架构揭秘</a>
+<img src=/icons/chevron-right.svg class=book-icon alt=Expand></label><ul><li><a href=/notebooks/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E7%AC%94%E8%AE%B0/%E7%AC%AC%E4%BA%8C%E9%83%A8%E5%88%86transformer%E6%9E%B6%E6%9E%84%E6%8F%AD%E7%A7%98/%E7%AC%AC1%E7%AB%A0_transformer%E6%A0%B8%E5%BF%83%E6%8F%AD%E7%A7%98/>第1章 Transformer核心揭秘</a></li><li><a href=/notebooks/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E7%AC%94%E8%AE%B0/%E7%AC%AC%E4%BA%8C%E9%83%A8%E5%88%86transformer%E6%9E%B6%E6%9E%84%E6%8F%AD%E7%A7%98/%E7%AC%AC2%E7%AB%A0_%E6%A8%A1%E5%9E%8B%E5%AE%B6%E6%97%8F%E8%B0%B1%E7%B3%BB%E4%BB%8E%E7%BC%96%E7%A0%81%E5%99%A8%E5%88%B0%E8%A7%A3%E7%A0%81%E5%99%A8/>第2章 模型家族谱系：从编码器到解码器</a></li><li><a href=/notebooks/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E7%AC%94%E8%AE%B0/%E7%AC%AC%E4%BA%8C%E9%83%A8%E5%88%86transformer%E6%9E%B6%E6%9E%84%E6%8F%AD%E7%A7%98/%E7%AC%AC3%E7%AB%A0_%E9%A2%84%E8%AE%AD%E7%BB%83%E7%9A%84%E5%A5%A5%E7%A7%98%E4%BB%8E%E6%95%B0%E6%8D%AE%E5%88%B0%E6%99%BA%E8%83%BD/>第3章 预训练的奥秘：从数据到智能</a></li></ul></li><li><input type=checkbox id=section-da88ac5e3d01ea6f4b2996cb87ecf19f class=toggle>
+<label for=section-da88ac5e3d01ea6f4b2996cb87ecf19f class=flex><a role=button>第三部分：数据工程与定制化</a>
+<img src=/icons/chevron-right.svg class=book-icon alt=Expand></label><ul><li><a href=/notebooks/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E7%AC%94%E8%AE%B0/%E7%AC%AC%E4%B8%89%E9%83%A8%E5%88%86%E6%95%B0%E6%8D%AE%E5%B7%A5%E7%A8%8B%E4%B8%8E%E5%AE%9A%E5%88%B6%E5%8C%96/%E7%AC%AC1%E7%AB%A0_%E6%95%B0%E6%8D%AE%E5%B7%A5%E7%A8%8B%E5%9F%BA%E7%A1%80/>第1章 数据工程基础</a></li><li><a href=/notebooks/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E7%AC%94%E8%AE%B0/%E7%AC%AC%E4%B8%89%E9%83%A8%E5%88%86%E6%95%B0%E6%8D%AE%E5%B7%A5%E7%A8%8B%E4%B8%8E%E5%AE%9A%E5%88%B6%E5%8C%96/%E7%AC%AC2%E7%AB%A0_%E5%BE%AE%E8%B0%83%E4%BD%A0%E7%9A%84%E4%B8%93%E5%B1%9E%E6%A8%A1%E5%9E%8B/>第2章 微调你的专属模型</a></li><li><a href=/notebooks/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E7%AC%94%E8%AE%B0/%E7%AC%AC%E4%B8%89%E9%83%A8%E5%88%86%E6%95%B0%E6%8D%AE%E5%B7%A5%E7%A8%8B%E4%B8%8E%E5%AE%9A%E5%88%B6%E5%8C%96/%E7%AC%AC3%E7%AB%A0_%E4%B8%8E%E4%BA%BA%E7%B1%BB%E5%AF%B9%E9%BD%90%E5%81%8F%E5%A5%BD%E4%BC%98%E5%8C%96/>第3章 与人类对齐：偏好优化</a></li><li><a href=/notebooks/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E7%AC%94%E8%AE%B0/%E7%AC%AC%E4%B8%89%E9%83%A8%E5%88%86%E6%95%B0%E6%8D%AE%E5%B7%A5%E7%A8%8B%E4%B8%8E%E5%AE%9A%E5%88%B6%E5%8C%96/%E7%AC%AC4%E7%AB%A0_%E5%88%9B%E5%BB%BA%E6%9B%B4%E4%BC%98%E7%9A%84%E5%B5%8C%E5%85%A5%E6%A8%A1%E5%9E%8B/>第4章 创建更优的嵌入模型</a></li></ul></li><li><input type=checkbox id=section-81f0a7a10bc544ea0e1fd883e2a436eb class=toggle>
+<label for=section-81f0a7a10bc544ea0e1fd883e2a436eb class=flex><a role=button>第四部分：大模型应用开发</a>
+<img src=/icons/chevron-right.svg class=book-icon alt=Expand></label><ul><li><a href=/notebooks/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E7%AC%94%E8%AE%B0/%E7%AC%AC%E5%9B%9B%E9%83%A8%E5%88%86%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91/%E7%AC%AC1%E7%AB%A0_%E6%8F%90%E7%A4%BA%E5%B7%A5%E7%A8%8B%E4%B8%8E%E4%B8%8A%E4%B8%8B%E6%96%87%E5%AD%A6%E4%B9%A0/>第1章 提示工程与上下文学习</a></li><li><a href=/notebooks/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E7%AC%94%E8%AE%B0/%E7%AC%AC%E5%9B%9B%E9%83%A8%E5%88%86%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91/%E7%AC%AC2%E7%AB%A0_%E6%A3%80%E7%B4%A2%E5%A2%9E%E5%BC%BA%E7%94%9F%E6%88%90rag%E5%8E%9F%E7%90%86/>第2章 检索增强生成（RAG）原理</a></li><li><a href=/notebooks/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E7%AC%94%E8%AE%B0/%E7%AC%AC%E5%9B%9B%E9%83%A8%E5%88%86%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91/%E7%AC%AC3%E7%AB%A0_%E6%99%BA%E8%83%BD%E4%BD%93agent%E6%A0%B8%E5%BF%83%E6%9C%BA%E5%88%B6/>第3章 智能体（Agent）核心机制</a></li><li><a href=/notebooks/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E7%AC%94%E8%AE%B0/%E7%AC%AC%E5%9B%9B%E9%83%A8%E5%88%86%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91/%E7%AC%AC4%E7%AB%A0_%E5%A4%9A%E6%A8%A1%E6%80%81%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%8E%9F%E7%90%86/>第4章 多模态大模型原理</a></li></ul></li><li><input type=checkbox id=section-0509decfe880d3d2074947902aea8022 class=toggle>
+<label for=section-0509decfe880d3d2074947902aea8022 class=flex><a role=button>第五部分：工程实战工具栈</a>
+<img src=/icons/chevron-right.svg class=book-icon alt=Expand></label><ul><li><a href=/notebooks/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E7%AC%94%E8%AE%B0/%E7%AC%AC%E4%BA%94%E9%83%A8%E5%88%86%E5%B7%A5%E7%A8%8B%E5%AE%9E%E6%88%98%E5%B7%A5%E5%85%B7%E6%A0%88/%E7%AC%AC1%E7%AB%A0_hugging_face%E7%94%9F%E6%80%81%E5%85%A8%E6%99%AF/>第1章 Hugging Face生态全景</a></li><li><a href=/notebooks/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E7%AC%94%E8%AE%B0/%E7%AC%AC%E4%BA%94%E9%83%A8%E5%88%86%E5%B7%A5%E7%A8%8B%E5%AE%9E%E6%88%98%E5%B7%A5%E5%85%B7%E6%A0%88/%E7%AC%AC2%E7%AB%A0_llama-factory%E5%BE%AE%E8%B0%83%E5%B7%A5%E5%8E%82/>第2章 LLaMA-Factory微调工厂</a></li><li><a href=/notebooks/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E7%AC%94%E8%AE%B0/%E7%AC%AC%E4%BA%94%E9%83%A8%E5%88%86%E5%B7%A5%E7%A8%8B%E5%AE%9E%E6%88%98%E5%B7%A5%E5%85%B7%E6%A0%88/%E7%AC%AC3%E7%AB%A0_trl%E4%B8%8E%E5%BC%BA%E5%8C%96%E5%AD%A6%E4%B9%A0%E5%AE%9E%E6%88%98/>第3章 TRL与强化学习实战</a></li><li><a href=/notebooks/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E7%AC%94%E8%AE%B0/%E7%AC%AC%E4%BA%94%E9%83%A8%E5%88%86%E5%B7%A5%E7%A8%8B%E5%AE%9E%E6%88%98%E5%B7%A5%E5%85%B7%E6%A0%88/%E7%AC%AC4%E7%AB%A0_deepspeed%E5%88%86%E5%B8%83%E5%BC%8F%E8%AE%AD%E7%BB%83/>第4章 DeepSpeed分布式训练</a></li><li><a href=/notebooks/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E7%AC%94%E8%AE%B0/%E7%AC%AC%E4%BA%94%E9%83%A8%E5%88%86%E5%B7%A5%E7%A8%8B%E5%AE%9E%E6%88%98%E5%B7%A5%E5%85%B7%E6%A0%88/%E7%AC%AC5%E7%AB%A0_%E7%AB%AF%E5%88%B0%E7%AB%AFllm%E9%A1%B9%E7%9B%AE%E5%AE%9E%E6%88%98/>第5章 端到端LLM项目实战</a></li></ul></li><li><input type=checkbox id=section-dc465ed94a0f7fb78440cab8a8a2a28b class=toggle>
+<label for=section-dc465ed94a0f7fb78440cab8a8a2a28b class=flex><a role=button>第六部分：生产部署与评估</a>
+<img src=/icons/chevron-right.svg class=book-icon alt=Expand></label><ul><li><a href=/notebooks/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E7%AC%94%E8%AE%B0/%E7%AC%AC%E5%85%AD%E9%83%A8%E5%88%86%E7%94%9F%E4%BA%A7%E9%83%A8%E7%BD%B2%E4%B8%8E%E8%AF%84%E4%BC%B0/%E7%AC%AC1%E7%AB%A0_%E6%A8%A1%E5%9E%8B%E5%8E%8B%E7%BC%A9%E4%B8%8E%E6%8E%A8%E7%90%86%E5%8A%A0%E9%80%9F/>第1章 模型压缩与推理加速</a></li><li><a href=/notebooks/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E7%AC%94%E8%AE%B0/%E7%AC%AC%E5%85%AD%E9%83%A8%E5%88%86%E7%94%9F%E4%BA%A7%E9%83%A8%E7%BD%B2%E4%B8%8E%E8%AF%84%E4%BC%B0/%E7%AC%AC2%E7%AB%A0_vllm%E9%AB%98%E6%80%A7%E8%83%BD%E6%8E%A8%E7%90%86/>第2章 vLLM高性能推理</a></li><li><a href=/notebooks/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E7%AC%94%E8%AE%B0/%E7%AC%AC%E5%85%AD%E9%83%A8%E5%88%86%E7%94%9F%E4%BA%A7%E9%83%A8%E7%BD%B2%E4%B8%8E%E8%AF%84%E4%BC%B0/%E7%AC%AC3%E7%AB%A0_%E6%A8%A1%E5%9E%8B%E8%AF%84%E4%BC%B0%E4%BD%93%E7%B3%BB/>第3章 模型评估体系</a></li></ul></li><li><input type=checkbox id=section-54ec04ac2cdda7238de2ed38f0bcb7b1 class=toggle>
+<label for=section-54ec04ac2cdda7238de2ed38f0bcb7b1 class=flex><a role=button>第七部分：高级技术专题</a>
+<img src=/icons/chevron-right.svg class=book-icon alt=Expand></label><ul><li><a href=/notebooks/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E7%AC%94%E8%AE%B0/%E7%AC%AC%E4%B8%83%E9%83%A8%E5%88%86%E9%AB%98%E7%BA%A7%E6%8A%80%E6%9C%AF%E4%B8%93%E9%A2%98/%E7%AC%AC1%E7%AB%A0_%E9%95%BF%E4%B8%8A%E4%B8%8B%E6%96%87%E6%8A%80%E6%9C%AF/>第1章 长上下文技术</a></li><li><a href=/notebooks/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E7%AC%94%E8%AE%B0/%E7%AC%AC%E4%B8%83%E9%83%A8%E5%88%86%E9%AB%98%E7%BA%A7%E6%8A%80%E6%9C%AF%E4%B8%93%E9%A2%98/%E7%AC%AC2%E7%AB%A0_%E6%96%B0%E5%9E%8B%E6%9E%B6%E6%9E%84%E6%8E%A2%E7%B4%A2/>第2章 新型架构探索</a></li><li><a href=/notebooks/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E7%AC%94%E8%AE%B0/%E7%AC%AC%E4%B8%83%E9%83%A8%E5%88%86%E9%AB%98%E7%BA%A7%E6%8A%80%E6%9C%AF%E4%B8%93%E9%A2%98/%E7%AC%AC3%E7%AB%A0_%E6%8E%A8%E7%90%86%E5%8A%A0%E9%80%9F%E9%BB%91%E7%A7%91%E6%8A%80/>第3章 推理加速黑科技</a></li><li><a href=/notebooks/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E7%AC%94%E8%AE%B0/%E7%AC%AC%E4%B8%83%E9%83%A8%E5%88%86%E9%AB%98%E7%BA%A7%E6%8A%80%E6%9C%AF%E4%B8%93%E9%A2%98/%E7%AC%AC4%E7%AB%A0_%E6%8E%A8%E7%90%86%E6%A8%A1%E5%9E%8B%E4%B8%93%E9%A2%98/>第4章 推理模型专题</a></li><li><a href=/notebooks/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E7%AC%94%E8%AE%B0/%E7%AC%AC%E4%B8%83%E9%83%A8%E5%88%86%E9%AB%98%E7%BA%A7%E6%8A%80%E6%9C%AF%E4%B8%93%E9%A2%98/%E7%AC%AC5%E7%AB%A0_%E6%A8%A1%E5%9E%8B%E5%AE%89%E5%85%A8%E4%B8%8E%E5%8F%AF%E8%A7%A3%E9%87%8A%E6%80%A7/>第5章 模型安全与可解释性</a></li></ul></li><li><a href=/notebooks/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E7%AC%94%E8%AE%B0/glossary/>GLOSSARY</a></li><li><a href=/notebooks/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E7%AC%94%E8%AE%B0/roadmap/>ROADMAP</a></li><li><a href=/notebooks/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E7%AC%94%E8%AE%B0/summary/>SUMMARY</a></li><li><a href=/notebooks/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E7%AC%94%E8%AE%B0/%E5%AE%8C%E7%BB%93%E6%8A%A5%E5%91%8A/>完结报告</a></li></ul></li><li><input type=checkbox id=section-7177254393287994b491879262a62a06 class=toggle>
+<label for=section-7177254393287994b491879262a62a06 class=flex><a role=button>实践笔记</a>
+<img src=/icons/chevron-right.svg class=book-icon alt=Expand></label><ul><li><a href=/notebooks/%E5%AE%9E%E8%B7%B5%E7%AC%94%E8%AE%B0/2.-%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3-fastapi/>深入理解 FastAPI</a></li><li><a href=/notebooks/%E5%AE%9E%E8%B7%B5%E7%AC%94%E8%AE%B0/4.-agent%E6%9C%80%E4%BD%B3%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/>Agent最佳设计模式</a></li></ul></li><li><input type=checkbox id=section-0172eb8516eeb7b4e657f3949a135c25 class=toggle checked>
+<label for=section-0172eb8516eeb7b4e657f3949a135c25 class=flex><a role=button>机器学习笔记</a>
+<img src=/icons/chevron-right.svg class=book-icon alt=Expand></label><ul><li><a href=/notebooks/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/%E7%AC%AC01%E7%AB%A0_%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E6%A6%82%E8%A7%88/>第01章 机器学习概览</a></li><li><a href=/notebooks/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/%E7%AC%AC02%E7%AB%A0_%E7%9F%A9%E9%98%B5%E8%BF%90%E7%AE%97%E4%B8%8E%E5%BE%AE%E7%A7%AF%E5%88%86/>第02章 矩阵运算与微积分</a></li><li><a href=/notebooks/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/%E7%AC%AC03%E7%AB%A0_svd%E4%B8%8E%E7%9F%A9%E9%98%B5%E5%88%86%E8%A7%A3/>第03章 SVD与矩阵分解</a></li><li><a href=/notebooks/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/%E7%AC%AC04%E7%AB%A0_%E6%A6%82%E7%8E%87%E5%88%86%E5%B8%83_%E6%8C%87%E6%95%B0%E6%97%8F%E4%B8%8E%E5%85%B1%E8%BD%AD%E5%85%88%E9%AA%8C/ class=active>第04章 概率分布 指数族与共轭先验</a></li><li><a href=/notebooks/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/%E7%AC%AC05%E7%AB%A0_%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92/>第05章 线性回归</a></li><li><a href=/notebooks/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/%E7%AC%AC06%E7%AB%A0_%E6%84%9F%E7%9F%A5%E6%9C%BA/>第06章 感知机</a></li><li><a href=/notebooks/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/%E7%AC%AC07%E7%AB%A0_%E6%94%AF%E6%8C%81%E5%90%91%E9%87%8F%E6%9C%BAsvm/>第07章 支持向量机(SVM)</a></li><li><a href=/notebooks/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/%E7%AC%AC08%E7%AB%A0_%E6%A0%B8%E6%96%B9%E6%B3%95/>第08章 核方法</a></li><li><a href=/notebooks/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/%E7%AC%AC09%E7%AB%A0_%E5%86%B3%E7%AD%96%E6%A0%91%E4%B8%8E%E9%9B%86%E6%88%90%E5%AD%A6%E4%B9%A0/>第09章 决策树与集成学习</a></li><li><a href=/notebooks/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/%E7%AC%AC10%E7%AB%A0_%E9%80%BB%E8%BE%91%E5%9B%9E%E5%BD%92%E4%B8%8E%E6%9C%80%E5%A4%A7%E7%86%B5%E6%A8%A1%E5%9E%8B/>第10章 逻辑回归与最大熵模型</a></li><li><a href=/notebooks/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/%E7%AC%AC11%E7%AB%A0_%E5%B9%BF%E4%B9%89%E7%BA%BF%E6%80%A7%E6%A8%A1%E5%9E%8Bglm/>第11章 广义线性模型(GLM)</a></li><li><a href=/notebooks/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/%E7%AC%AC13%E7%AB%A0_%E6%A6%82%E7%8E%87%E5%9B%BE%E6%A8%A1%E5%9E%8B_%E8%A1%A8%E7%A4%BA/>第13章 概率图模型 表示</a></li><li><a href=/notebooks/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/%E7%AC%AC14%E7%AB%A0_%E6%A6%82%E7%8E%87%E5%9B%BE%E6%A8%A1%E5%9E%8B_%E6%8E%A8%E6%96%AD/>第14章 概率图模型 推断</a></li><li><input type=checkbox id=section-b17efd79c46843a887113a063f929150 class=toggle>
+<label for=section-b17efd79c46843a887113a063f929150 class=flex><a role=button>assets</a>
+<img src=/icons/chevron-right.svg class=book-icon alt=Expand></label><ul></ul></li><li><a href=/notebooks/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/skills/>skills</a></li></ul></li><li><input type=checkbox id=section-29762f225235d2ac19b613cc28b093c8 class=toggle>
+<label for=section-29762f225235d2ac19b613cc28b093c8 class=flex><a href=/notebooks/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/>深度学习笔记</a>
+<img src=/icons/chevron-right.svg class=book-icon alt=Expand></label><ul><li><a href=/notebooks/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/%E7%AC%AC1%E7%AB%A0_%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E5%9F%BA%E7%A1%80/>第1章 深度学习基础</a></li></ul></li></ul></nav><script>(function(){var e=document.querySelector("aside .book-menu-content");addEventListener("beforeunload",function(){localStorage.setItem("menu.scrollTop",e.scrollTop)}),e.scrollTop=localStorage.getItem("menu.scrollTop")})()</script></div></aside><div class=book-page><header class="book-header hidden"><div class="flex align-center justify-between"><label for=menu-control><img src=/icons/menu.svg class=book-icon alt=Menu></label><h3>第04章 概率分布 指数族与共轭先验</h3><label for=toc-control><img src=/icons/toc.svg class=book-icon alt="Table of Contents"></label></div><aside class=hidden><nav id=TableOfContents><ul><li><a href=#前言>前言</a></li><li><a href=#目录>目录</a></li><li><a href=#引言>引言</a></li><li><a href=#1-指数族分布的定义>1. 指数族分布的定义</a><ul><li><a href=#11-从伯努利分布开始>1.1 从伯努利分布开始</a></li><li><a href=#12-高斯分布的改写>1.2 高斯分布的改写</a></li><li><a href=#13-指数族的标准形式>1.3 指数族的标准形式</a></li><li><a href=#14-对数配分函数的定义>1.4 对数配分函数的定义</a></li><li><a href=#15-常见分布的指数族形式>1.5 常见分布的指数族形式</a></li></ul></li><li><a href=#2-指数族分布的性质>2. 指数族分布的性质</a><ul><li><a href=#21-一阶导数期望>2.1 一阶导数:期望</a></li><li><a href=#22-二阶导数方差>2.2 二阶导数:方差</a></li><li><a href=#23-fisher-信息矩阵>2.3 Fisher 信息矩阵</a></li><li><a href=#24-最大似然估计的矩匹配>2.4 最大似然估计的矩匹配</a></li></ul></li><li><a href=#3-指数族分布与最大熵>3. 指数族分布与最大熵</a><ul><li><a href=#31-问题如何选择概率分布>3.1 问题:如何选择概率分布?</a></li><li><a href=#32-熵与最大熵原理>3.2 熵与最大熵原理</a></li><li><a href=#33-推导最大熵分布是指数族>3.3 推导:最大熵分布是指数族</a></li><li><a href=#34-例子-1高斯分布>3.4 例子 1:高斯分布</a></li><li><a href=#35-例子-2指数分布>3.5 例子 2:指数分布</a></li><li><a href=#36-例子-3离散均匀分布>3.6 例子 3:离散均匀分布</a></li></ul></li><li><a href=#4-指数族分布与广义线性模型-glm>4. 指数族分布与广义线性模型 (GLM)</a><ul><li><a href=#41-问题线性回归与逻辑回归的统一>4.1 问题:线性回归与逻辑回归的统一</a></li><li><a href=#42-glm-的定义>4.2 GLM 的定义</a></li><li><a href=#43-核心推导glm-的统一梯度公式>4.3 核心推导:GLM 的统一梯度公式</a></li><li><a href=#44-hessian-矩阵凸性保证>4.4 Hessian 矩阵:凸性保证</a></li><li><a href=#45-例子-1线性回归-高斯-glm>4.5 例子 1:线性回归 (高斯 GLM)</a></li><li><a href=#46-例子-2逻辑回归-伯努利-glm>4.6 例子 2:逻辑回归 (伯努利 GLM)</a></li><li><a href=#47-例子-3泊松回归-泊松-glm>4.7 例子 3:泊松回归 (泊松 GLM)</a></li><li><a href=#48-glm-的几何理解>4.8 GLM 的几何理解</a></li></ul></li><li><a href=#5-总结>5. 总结</a><ul><li><a href=#51-主要结论>5.1 主要结论</a></li><li><a href=#52-为什么指数族如此重要>5.2 为什么指数族如此重要?</a></li><li><a href=#53-关键公式速查表>5.3 关键公式速查表</a></li></ul></li><li><a href=#参考文献>参考文献</a></li></ul></nav></aside></header><article class="markdown book-article"><h1 id=第04章-指数族分布>第04章 指数族分布<a class=anchor href=#%e7%ac%ac04%e7%ab%a0-%e6%8c%87%e6%95%b0%e6%97%8f%e5%88%86%e5%b8%83>#</a></h1><h2 id=前言>前言<a class=anchor href=#%e5%89%8d%e8%a8%80>#</a></h2><p>在概率论的浩瀚海洋中,<strong>指数族分布 (Exponential Family)</strong> 是一座灯塔。它不仅仅是高斯分布、伯努利分布等常见分布的集合,更是它们背后的<strong>通用模版</strong>。</p><p>为什么线性回归、逻辑回归的梯度公式长得一模一样?为什么最大熵原理最终指向了它?为什么贝叶斯推断需要共轭先验?</p><p>本章将带你深入这个"上帝的指纹",揭示看似无关的算法背后统一的数学本质。学完本章,你将不再是一个个地记忆公式,而是掌握了生成公式的<strong>元规则</strong>。</p><hr><h2 id=目录>目录<a class=anchor href=#%e7%9b%ae%e5%bd%95>#</a></h2><ul><li><a href=#%e5%bc%95%e8%a8%80>引言</a></li><li><a href=#1-%e6%8c%87%e6%95%b0%e6%97%8f%e5%88%86%e5%b8%83%e7%9a%84%e5%ae%9a%e4%b9%89>1. 指数族分布的定义</a><ul><li><a href=#11-%e4%bb%8e%e4%bc%af%e5%8a%aa%e5%88%a9%e5%88%86%e5%b8%83%e5%bc%80%e5%a7%8b>1.1 从伯努利分布开始</a></li><li><a href=#12-%e9%ab%98%e6%96%af%e5%88%86%e5%b8%83%e7%9a%84%e6%94%b9%e5%86%99>1.2 高斯分布的改写</a></li><li><a href=#13-%e6%8c%87%e6%95%b0%e6%97%8f%e7%9a%84%e6%a0%87%e5%87%86%e5%bd%a2%e5%bc%8f>1.3 指数族的标准形式</a></li><li><a href=#14-%e5%af%b9%e6%95%b0%e9%85%8d%e5%88%86%e5%87%bd%e6%95%b0%e7%9a%84%e5%ae%9a%e4%b9%89>1.4 对数配分函数的定义</a></li><li><a href=#15-%e5%b8%b8%e8%a7%81%e5%88%86%e5%b8%83%e7%9a%84%e6%8c%87%e6%95%b0%e6%97%8f%e5%bd%a2%e5%bc%8f>1.5 常见分布的指数族形式</a></li></ul></li><li><a href=#2-%e6%8c%87%e6%95%b0%e6%97%8f%e5%88%86%e5%b8%83%e7%9a%84%e6%80%a7%e8%b4%a8>2. 指数族分布的性质</a><ul><li><a href=#21-%e4%b8%80%e9%98%b6%e5%af%bc%e6%95%b0%e6%9c%9f%e6%9c%9b>2.1 一阶导数:期望</a></li><li><a href=#22-%e4%ba%8c%e9%98%b6%e5%af%bc%e6%95%b0%e6%96%b9%e5%b7%ae>2.2 二阶导数:方差</a></li><li><a href=#23-fisher-%e4%bf%a1%e6%81%af%e7%9f%a9%e9%98%b5>2.3 Fisher 信息矩阵</a></li><li><a href=#24-%e6%9c%80%e5%a4%a7%e4%bc%bc%e7%84%b6%e4%bc%b0%e8%ae%a1%e7%9a%84%e7%9f%a9%e5%8c%b9%e9%85%8d>2.4 最大似然估计的矩匹配</a></li></ul></li><li><a href=#3-%e6%8c%87%e6%95%b0%e6%97%8f%e5%88%86%e5%b8%83%e4%b8%8e%e6%9c%80%e5%a4%a7%e7%86%b5>3. 指数族分布与最大熵</a><ul><li><a href=#31-%e9%97%ae%e9%a2%98%e5%a6%82%e4%bd%95%e9%80%89%e6%8b%a9%e6%a6%82%e7%8e%87%e5%88%86%e5%b8%83>3.1 问题:如何选择概率分布?</a></li><li><a href=#32-%e7%86%b5%e4%b8%8e%e6%9c%80%e5%a4%a7%e7%86%b5%e5%8e%9f%e7%90%86>3.2 熵与最大熵原理</a></li><li><a href=#33-%e6%8e%a8%e5%af%bc%e6%9c%80%e5%a4%a7%e7%86%b5%e5%88%86%e5%b8%83%e6%98%af%e6%8c%87%e6%95%b0%e6%97%8f>3.3 推导:最大熵分布是指数族</a></li><li><a href=#34-%e4%be%8b%e5%ad%90-1%e9%ab%98%e6%96%af%e5%88%86%e5%b8%83>3.4 例子 1:高斯分布</a></li><li><a href=#35-%e4%be%8b%e5%ad%90-2%e6%8c%87%e6%95%b0%e5%88%86%e5%b8%83>3.5 例子 2:指数分布</a></li><li><a href=#36-%e4%be%8b%e5%ad%90-3%e7%a6%bb%e6%95%a3%e5%9d%87%e5%8c%80%e5%88%86%e5%b8%83>3.6 例子 3:离散均匀分布</a></li></ul></li><li><a href=#4-%e6%8c%87%e6%95%b0%e6%97%8f%e5%88%86%e5%b8%83%e4%b8%8e%e5%b9%bf%e4%b9%89%e7%ba%bf%e6%80%a7%e6%a8%a1%e5%9e%8b-glm>4. 指数族分布与广义线性模型 (GLM)</a><ul><li><a href=#41-%e9%97%ae%e9%a2%98%e7%ba%bf%e6%80%a7%e5%9b%9e%e5%bd%92%e4%b8%8e%e9%80%bb%e8%be%91%e5%9b%9e%e5%bd%92%e7%9a%84%e7%bb%9f%e4%b8%80>4.1 问题:线性回归与逻辑回归的统一</a></li><li><a href=#42-glm-%e7%9a%84%e5%ae%9a%e4%b9%89>4.2 GLM 的定义</a></li><li><a href=#43-%e6%a0%b8%e5%bf%83%e6%8e%a8%e5%af%bcglm-%e7%9a%84%e7%bb%9f%e4%b8%80%e6%a2%af%e5%ba%a6%e5%85%ac%e5%bc%8f>4.3 核心推导:GLM 的统一梯度公式</a></li><li><a href=#44-hessian-%e7%9f%a9%e9%98%b5%e5%87%b8%e6%80%a7%e4%bf%9d%e8%af%81>4.4 Hessian 矩阵:凸性保证</a></li><li><a href=#45-%e4%be%8b%e5%ad%90-1%e7%ba%bf%e6%80%a7%e5%9b%9e%e5%bd%92-%e9%ab%98%e6%96%af-glm>4.5 例子 1:线性回归 (高斯 GLM)</a></li><li><a href=#46-%e4%be%8b%e5%ad%90-2%e9%80%bb%e8%be%91%e5%9b%9e%e5%bd%92-%e4%bc%af%e5%8a%aa%e5%88%a9-glm>4.6 例子 2:逻辑回归 (伯努利 GLM)</a></li><li><a href=#47-%e4%be%8b%e5%ad%90-3%e6%b3%8a%e6%9d%be%e5%9b%9e%e5%bd%92-%e6%b3%8a%e6%9d%be-glm>4.7 例子 3:泊松回归 (泊松 GLM)</a></li><li><a href=#48-glm-%e7%9a%84%e5%87%a0%e4%bd%95%e7%90%86%e8%a7%a3>4.8 GLM 的几何理解</a></li></ul></li><li><a href=#5-%e6%80%bb%e7%bb%93>5. 总结</a><ul><li><a href=#51-%e4%b8%bb%e8%a6%81%e7%bb%93%e8%ae%ba>5.1 主要结论</a></li><li><a href=#52-%e4%b8%ba%e4%bb%80%e4%b9%88%e6%8c%87%e6%95%b0%e6%97%8f%e5%a6%82%e6%ad%a4%e9%87%8d%e8%a6%81>5.2 为什么指数族如此重要?</a></li><li><a href=#53-%e5%85%b3%e9%94%ae%e5%85%ac%e5%bc%8f%e9%80%9f%e6%9f%a5%e8%a1%a8>5.3 关键公式速查表</a></li></ul></li><li><a href=#%e5%8f%82%e8%80%83%e6%96%87%e7%8c%ae>参考文献</a></li></ul><hr><h2 id=引言>引言<a class=anchor href=#%e5%bc%95%e8%a8%80>#</a></h2><p>在机器学习中,我们会遇到各种各样的概率分布:</p><ul><li>线性回归使用高斯分布 $\mathcal{N}(\mu, \sigma^2)$</li><li>逻辑回归使用伯努利分布 $\text{Bernoulli}(\mu)$</li><li>泊松回归使用泊松分布 $\text{Poisson}(\lambda)$</li></ul><p>它们看起来截然不同:高斯处理连续变量,伯努利处理二元事件,泊松处理计数。但它们实际上<strong>共享同一个数学结构</strong>——这就是<strong>指数族分布</strong>。</p><p>本章我们将:</p><ol><li>从具体分布推导出指数族的统一形式</li><li>深入理解对数配分函数的核心性质</li><li>从信息论角度理解指数族的必然性(最大熵原理)</li><li>揭示广义线性模型的统一本质</li></ol><p><img src=assets/exponential_family_unified.svg alt=指数族统一框架></p><p><em>图1: 指数族分布的统一视角——看似截然不同的分布,实际上都是同一个模版 $P(x|\eta) = h(x)\exp(\eta^T T(x) - A(\eta))$ 的特例,唯一的差异在于对数配分函数 $A(\eta)$ 的形式。</em></p><hr><h2 id=1-指数族分布的定义>1. 指数族分布的定义<a class=anchor href=#1-%e6%8c%87%e6%95%b0%e6%97%8f%e5%88%86%e5%b8%83%e7%9a%84%e5%ae%9a%e4%b9%89>#</a></h2><h3 id=11-从伯努利分布开始>1.1 从伯努利分布开始<a class=anchor href=#11-%e4%bb%8e%e4%bc%af%e5%8a%aa%e5%88%a9%e5%88%86%e5%b8%83%e5%bc%80%e5%a7%8b>#</a></h3><p>考虑抛硬币实验,$x \in {0, 1}$,正面概率为 $\mu$:</p><p>$$
+P(x|\mu) = \mu^x (1-\mu)^{1-x}
+$$</p><p>取对数:</p><p>$$
+\log P(x|\mu) = x \log \mu + (1-x) \log(1-\mu)
+$$</p><p>重新整理:</p><p>$$
+\begin{aligned}
+\log P(x|\mu) &= x \log \mu + \log(1-\mu) - x \log(1-\mu) \
+&= x \left[\log \mu - \log(1-\mu)\right] + \log(1-\mu) \
+&= x \log \frac{\mu}{1-\mu} + \log(1-\mu)
+\end{aligned}
+$$</p><p>引入新参数 $\eta = \log \frac{\mu}{1-\mu}$ (logit 函数)。注意到 $1-\mu = \frac{1}{1+e^\eta}$,因此:</p><p>$$
+\log(1-\mu) = -\log(1+e^\eta)
+$$</p><p>代入得:</p><p>$$
+\log P(x|\eta) = x \eta - \log(1+e^\eta)
+$$</p><p>指数化:</p><p>$$
+P(x|\eta) = \exp\left(\eta x - \log(1+e^\eta)\right)
+$$</p><p><strong>观察这个形式</strong>:</p><ul><li>参数 $\eta$ 乘以数据 $x$</li><li>减去一个只依赖于 $\eta$ 的项 $\log(1+e^\eta)$</li></ul><hr><h3 id=12-高斯分布的改写>1.2 高斯分布的改写<a class=anchor href=#12-%e9%ab%98%e6%96%af%e5%88%86%e5%b8%83%e7%9a%84%e6%94%b9%e5%86%99>#</a></h3><p>考虑高斯分布 $\mathcal{N}(\mu, \sigma^2)$ (假设 $\sigma^2$ 已知):</p><p>$$
+P(x|\mu) = \frac{1}{\sqrt{2\pi\sigma^2}} \exp\left(-\frac{(x-\mu)^2}{2\sigma^2}\right)
+$$</p><p>展开平方项:</p><p>$$
+-\frac{(x-\mu)^2}{2\sigma^2} = -\frac{x^2}{2\sigma^2} + \frac{\mu x}{\sigma^2} - \frac{\mu^2}{2\sigma^2}
+$$</p><p>因此:</p><p>$$
+P(x|\mu) = \underbrace{\frac{1}{\sqrt{2\pi\sigma^2}} \exp\left(-\frac{x^2}{2\sigma^2}\right)}_{h(x)} \exp\left(\frac{\mu}{\sigma^2} x - \frac{\mu^2}{2\sigma^2}\right)
+$$</p><p>定义自然参数 $\eta = \frac{\mu}{\sigma^2}$,则 $\frac{\mu^2}{2\sigma^2} = \frac{\sigma^2 \eta^2}{2}$:</p><p>$$
+P(x|\eta) = h(x) \exp\left(\eta x - \frac{\sigma^2 \eta^2}{2}\right)
+$$</p><p><strong>再次观察</strong>:同样的模式!</p><ul><li>参数 $\eta$ 乘以数据 $x$</li><li>减去一个只依赖于 $\eta$ 的项</li><li>外加一个与参数无关的基础项 $h(x)$</li></ul><hr><h3 id=13-指数族的标准形式>1.3 指数族的标准形式<a class=anchor href=#13-%e6%8c%87%e6%95%b0%e6%97%8f%e7%9a%84%e6%a0%87%e5%87%86%e5%bd%a2%e5%bc%8f>#</a></h3><p>基于以上观察,我们定义<strong>指数族分布</strong>:</p><p>$$
+\boxed{P(x|\eta) = h(x) \exp\left(\eta^T T(x) - A(\eta)\right)}
+$$</p><p>其中:</p><ul><li><strong>$\eta \in \mathbb{R}^d$</strong>: 自然参数 (Natural Parameter)</li><li><strong>$T(x) \in \mathbb{R}^d$</strong>: 充分统计量 (Sufficient Statistic),是关于数据 $x$ 的函数</li><li><strong>$A(\eta) \in \mathbb{R}$</strong>: 对数配分函数 (Log-Partition Function)</li><li><strong>$h(x) > 0$</strong>: 基础测度 (Base Measure),与参数 $\eta$ 无关</li></ul><p><strong>充分统计量的含义</strong>: $T(x)$ 包含了关于参数 $\eta$ 的所有信息。对于 i.i.d. 样本 ${x_1, \ldots, x_N}$,充分统计量为 $\sum_{i=1}^N T(x_i)$ 或其均值 $\bar{T} = \frac{1}{N}\sum_{i=1}^N T(x_i)$。</p><hr><h3 id=14-对数配分函数的定义>1.4 对数配分函数的定义<a class=anchor href=#14-%e5%af%b9%e6%95%b0%e9%85%8d%e5%88%86%e5%87%bd%e6%95%b0%e7%9a%84%e5%ae%9a%e4%b9%89>#</a></h3><p>概率分布必须归一化:</p><p>$$
+\int P(x|\eta) , dx = \int h(x) \exp(\eta^T T(x) - A(\eta)) , dx = 1
+$$</p><p>移项:</p><p>$$
+\int h(x) \exp(\eta^T T(x)) , dx = e^{A(\eta)}
+$$</p><p>取对数:</p><p>$$
+\boxed{A(\eta) = \log \int h(x) \exp(\eta^T T(x)) , dx}
+$$</p><p>这就是对数配分函数的显式定义。它保证了概率的归一化,但它的作用远不止于此——它的导数蕴含了分布的所有统计性质。</p><hr><h3 id=15-常见分布的指数族形式>1.5 常见分布的指数族形式<a class=anchor href=#15-%e5%b8%b8%e8%a7%81%e5%88%86%e5%b8%83%e7%9a%84%e6%8c%87%e6%95%b0%e6%97%8f%e5%bd%a2%e5%bc%8f>#</a></h3><p><strong>伯努利分布</strong> $\text{Bernoulli}(\mu)$:
+$$
+\begin{aligned}
+\eta &= \log \frac{\mu}{1-\mu} \
+T(x) &= x \
+A(\eta) &= \log(1+e^\eta) \
+h(x) &= 1
+\end{aligned}
+$$</p><p><strong>高斯分布</strong> $\mathcal{N}(\mu, \sigma^2)$ ($\sigma^2$ 已知):
+$$
+\begin{aligned}
+\eta &= \frac{\mu}{\sigma^2} \
+T(x) &= x \
+A(\eta) &= \frac{\sigma^2 \eta^2}{2} \
+h(x) &= \frac{1}{\sqrt{2\pi\sigma^2}} \exp\left(-\frac{x^2}{2\sigma^2}\right)
+\end{aligned}
+$$</p><p><strong>泊松分布</strong> $\text{Poisson}(\lambda)$:
+$$
+\begin{aligned}
+\eta &= \log \lambda \
+T(x) &= x \
+A(\eta) &= e^\eta \
+h(x) &= \frac{1}{x!}
+\end{aligned}
+$$</p><p><strong>指数分布</strong> $\text{Exp}(\lambda)$:
+$$
+\begin{aligned}
+\eta &= -\lambda \
+T(x) &= x \
+A(\eta) &= -\log(-\eta) \quad (\eta &lt; 0) \
+h(x) &= \mathbb{I}(x \geq 0)
+\end{aligned}
+$$</p><hr><h2 id=2-指数族分布的性质>2. 指数族分布的性质<a class=anchor href=#2-%e6%8c%87%e6%95%b0%e6%97%8f%e5%88%86%e5%b8%83%e7%9a%84%e6%80%a7%e8%b4%a8>#</a></h2><p>对数配分函数 $A(\eta)$ 不仅仅是归一化常数,它的导数编码了分布的所有矩信息。</p><h3 id=21-一阶导数期望>2.1 一阶导数:期望<a class=anchor href=#21-%e4%b8%80%e9%98%b6%e5%af%bc%e6%95%b0%e6%9c%9f%e6%9c%9b>#</a></h3><p><strong>定理 1</strong> (对数配分函数的梯度):
+$$
+\boxed{\nabla_\eta A(\eta) = \mathbb{E}_{P(x|\eta)}[T(x)]}
+$$</p><p><strong>证明</strong>:</p><p>从 $A(\eta)$ 的定义出发:</p><p>$$
+A(\eta) = \log \int h(x) \exp(\eta^T T(x)) , dx
+$$</p><p>对 $\eta_i$ 求偏导。使用对数求导法则 $\frac{d}{dx}\log f(x) = \frac{1}{f(x)} \frac{df}{dx}$:</p><p>$$
+\frac{\partial A(\eta)}{\partial \eta_i} = \frac{1}{\int h(x) \exp(\eta^T T(x)) , dx} \cdot \frac{\partial}{\partial \eta_i} \int h(x) \exp(\eta^T T(x)) , dx
+$$</p><p>利用 Leibniz 积分法则,将导数穿过积分号:</p><p>$$
+\frac{\partial}{\partial \eta_i} \int h(x) \exp(\eta^T T(x)) , dx = \int h(x) \frac{\partial}{\partial \eta_i} \exp(\eta^T T(x)) , dx
+$$</p><p>计算指数函数的导数(链式法则):</p><p>$$
+\frac{\partial}{\partial \eta_i} \exp(\eta^T T(x)) = \exp(\eta^T T(x)) \cdot \frac{\partial}{\partial \eta_i}(\eta^T T(x)) = \exp(\eta^T T(x)) \cdot T_i(x)
+$$</p><p>因为 $\eta^T T(x) = \sum_j \eta_j T_j(x)$,对 $\eta_i$ 求导只留下 $T_i(x)$。</p><p>代入:</p><p>$$
+\frac{\partial A(\eta)}{\partial \eta_i} = \frac{\int h(x) T_i(x) \exp(\eta^T T(x)) , dx}{\int h(x) \exp(\eta^T T(x)) , dx}
+$$</p><p>注意分母恰好是 $e^{A(\eta)}$,分子分母同除以 $e^{A(\eta)}$:</p><p>$$
+\frac{\partial A(\eta)}{\partial \eta_i} = \int T_i(x) \underbrace{h(x) \exp(\eta^T T(x) - A(\eta))}_{P(x|\eta)} , dx = \int T_i(x) P(x|\eta) , dx = \mathbb{E}[T_i(x)]
+$$</p><p>以向量形式:</p><p>$$
+\boxed{\nabla_\eta A(\eta) = \mathbb{E}[T(x)]} \quad \square
+$$</p><hr><p><strong>物理意义</strong>:</p><p>定义<strong>均值参数</strong> (Mean Parameter):
+$$
+\mu = \mathbb{E}[T(x)]
+$$</p><p>定理 1 告诉我们:
+$$
+\mu = \nabla_\eta A(\eta)
+$$</p><p>这建立了自然参数 $\eta$ 和均值参数 $\mu$ 之间的对应关系。改变 $\eta$,就改变了 $\mu$。</p><p><strong>验证</strong>:对于伯努利分布,$A(\eta) = \log(1+e^\eta)$:</p><p>$$
+\frac{dA(\eta)}{d\eta} = \frac{e^\eta}{1+e^\eta} = \frac{1}{1+e^{-\eta}} = \sigma(\eta) = \mu
+$$</p><p>这正是 sigmoid 函数!自然参数 $\eta \in \mathbb{R}$ 通过 sigmoid 映射到概率 $\mu \in (0,1)$。</p><hr><h3 id=22-二阶导数方差>2.2 二阶导数:方差<a class=anchor href=#22-%e4%ba%8c%e9%98%b6%e5%af%bc%e6%95%b0%e6%96%b9%e5%b7%ae>#</a></h3><p><strong>定理 2</strong> (对数配分函数的 Hessian):
+$$
+\boxed{\nabla^2_\eta A(\eta) = \text{Cov}[T(x)]}
+$$</p><p>其中 Hessian 矩阵的 $(i,j)$ 元素为:</p><p>$$
+\left[\nabla^2_\eta A(\eta)\right]_{ij} = \frac{\partial^2 A(\eta)}{\partial \eta_i \partial \eta_j}
+$$</p><p>协方差矩阵定义为:</p><p>$$
+\text{Cov}[T(x)]_{ij} = \mathbb{E}[T_i(x) T_j(x)] - \mathbb{E}[T_i(x)] \mathbb{E}[T_j(x)]
+$$</p><p><strong>证明</strong>:</p><p>从定理 1 我们知道:</p><p>$$
+\frac{\partial A(\eta)}{\partial \eta_i} = \mathbb{E}[T_i(x)] = \int T_i(x) P(x|\eta) , dx
+$$</p><p>对 $\eta_j$ 再次求导:</p><p>$$
+\frac{\partial^2 A(\eta)}{\partial \eta_i \partial \eta_j} = \frac{\partial}{\partial \eta_j} \int T_i(x) P(x|\eta) , dx = \int T_i(x) \frac{\partial P(x|\eta)}{\partial \eta_j} , dx
+$$</p><p>关键是计算 $\frac{\partial P(x|\eta)}{\partial \eta_j}$。从 $P(x|\eta) = h(x) \exp(\eta^T T(x) - A(\eta))$,取对数:</p><p>$$
+\log P(x|\eta) = \log h(x) + \eta^T T(x) - A(\eta)
+$$</p><p>对 $\eta_j$ 求导:</p><p>$$
+\frac{\partial \log P(x|\eta)}{\partial \eta_j} = T_j(x) - \frac{\partial A(\eta)}{\partial \eta_j} = T_j(x) - \mathbb{E}[T_j(x)]
+$$</p><p>利用对数导数技巧 $\frac{\partial P}{\partial \eta_j} = P \frac{\partial \log P}{\partial \eta_j}$:</p><p>$$
+\frac{\partial P(x|\eta)}{\partial \eta_j} = P(x|\eta) \left[T_j(x) - \mathbb{E}[T_j(x)]\right]
+$$</p><p>代入二阶导数:</p><p>$$
+\frac{\partial^2 A(\eta)}{\partial \eta_i \partial \eta_j} = \int T_i(x) P(x|\eta) \left[T_j(x) - \mathbb{E}[T_j(x)]\right] , dx
+$$</p><p>展开:</p><p>$$
+\begin{aligned}
+&= \int T_i(x) T_j(x) P(x|\eta) , dx - \int T_i(x) P(x|\eta) , dx \cdot \mathbb{E}[T_j(x)] \
+&= \mathbb{E}[T_i(x) T_j(x)] - \mathbb{E}[T_i(x)] \mathbb{E}[T_j(x)] \
+&= \text{Cov}[T_i(x), T_j(x)]
+\end{aligned}
+$$</p><p>因此:</p><p>$$
+\boxed{\nabla^2_\eta A(\eta) = \text{Cov}[T(x)]} \quad \square
+$$</p><hr><p><strong>物理意义</strong>:</p><p>协方差矩阵总是半正定的 ($\text{Cov}[T(x)] \succeq 0$),因此:</p><p>$$
+\nabla^2_\eta A(\eta) \succeq 0
+$$</p><p>这意味着 $A(\eta)$ 是<strong>凸函数</strong>。</p><p><strong>推论</strong> (凸性的后果):</p><ol><li>负对数似然 $-\log P(x|\eta) = A(\eta) - \eta^T T(x) + \text{const}$ 是关于 $\eta$ 的凸函数</li><li>最大似然估计 (MLE) 是凸优化问题</li><li>MLE 的解存在且唯一 (在参数空间内部)</li><li>梯度下降必然收敛到全局最优</li></ol><p><strong>这是指数族分布的第一个核心优势:优化问题天然是凸的。</strong></p><hr><h3 id=23-fisher-信息矩阵>2.3 Fisher 信息矩阵<a class=anchor href=#23-fisher-%e4%bf%a1%e6%81%af%e7%9f%a9%e9%98%b5>#</a></h3><p>定义 <strong>Fisher 信息矩阵</strong>:</p><p>$$
+\mathcal{I}(\eta) = \mathbb{E}\left[\left(\nabla_\eta \log P(x|\eta)\right) \left(\nabla_\eta \log P(x|\eta)\right)^T\right]
+$$</p><p>它度量参数 $\eta$ 的可估计性:Fisher 信息越大,参数越容易从数据中估计。</p><p>对于指数族分布:</p><p>$$
+\nabla_\eta \log P(x|\eta) = \nabla_\eta \left[\eta^T T(x) - A(\eta)\right] = T(x) - \nabla_\eta A(\eta) = T(x) - \mathbb{E}[T(x)]
+$$</p><p>因此:</p><p>$$
+\begin{aligned}
+\mathcal{I}(\eta) &= \mathbb{E}\left[(T(x) - \mathbb{E}[T(x)])(T(x) - \mathbb{E}[T(x)])^T\right] \
+&= \text{Cov}[T(x)]
+\end{aligned}
+$$</p><p>结合定理 2:</p><p>$$
+\boxed{\mathcal{I}(\eta) = \nabla^2_\eta A(\eta)}
+$$</p><p><strong>意义</strong>: Fisher 信息矩阵等于对数配分函数的 Hessian。这意味着 $A(\eta)$ 的曲率直接编码了参数的可估计性:曲率越大 (方差越大),参数越难估计,需要更多数据。</p><hr><h3 id=24-最大似然估计的矩匹配>2.4 最大似然估计的矩匹配<a class=anchor href=#24-%e6%9c%80%e5%a4%a7%e4%bc%bc%e7%84%b6%e4%bc%b0%e8%ae%a1%e7%9a%84%e7%9f%a9%e5%8c%b9%e9%85%8d>#</a></h3><p>对于 i.i.d. 样本 ${x_1, \ldots, x_N}$,对数似然为:</p><p>$$
+\ell(\eta) = \sum_{i=1}^N \log P(x_i|\eta) = \sum_{i=1}^N \left[\eta^T T(x_i) - A(\eta) + \log h(x_i)\right]
+$$</p><p>去掉与 $\eta$ 无关的项:</p><p>$$
+\ell(\eta) = N \eta^T \bar{T} - N A(\eta) + \text{const}
+$$</p><p>其中 $\bar{T} = \frac{1}{N}\sum_{i=1}^N T(x_i)$ 是充分统计量的样本均值。</p><p>一阶最优条件:</p><p>$$
+\nabla_\eta \ell(\eta) = N \bar{T} - N \nabla_\eta A(\eta) = 0
+$$</p><p>即:</p><p>$$
+\boxed{\nabla_\eta A(\hat{\eta}_{\text{MLE}}) = \bar{T}}
+$$</p><p>结合定理 1:</p><p>$$
+\boxed{\mathbb{E}<em>{P(x|\hat{\eta}</em>{\text{MLE}})}[T(x)] = \bar{T}}
+$$</p><p><strong>MLE 的物理意义</strong>: 最大似然估计使得<strong>模型的理论期望等于数据的经验期望</strong>。这称为<strong>矩匹配</strong> (Moment Matching)。</p><p><strong>例子</strong> (伯努利分布):</p><p>$T(x) = x$,$\bar{T} = \frac{1}{N}\sum_{i=1}^N x_i = \hat{\mu}$ (样本均值)。</p><p>MLE 条件:</p><p>$$
+\nabla_\eta A(\eta) = \sigma(\eta) = \hat{\mu}
+$$</p><p>解得:</p><p>$$
+\hat{\eta}_{\text{MLE}} = \text{logit}(\hat{\mu}) = \log \frac{\hat{\mu}}{1-\hat{\mu}}
+$$</p><p>这正是我们期望的结果。</p><hr><h2 id=3-指数族分布与最大熵>3. 指数族分布与最大熵<a class=anchor href=#3-%e6%8c%87%e6%95%b0%e6%97%8f%e5%88%86%e5%b8%83%e4%b8%8e%e6%9c%80%e5%a4%a7%e7%86%b5>#</a></h2><h3 id=31-问题如何选择概率分布>3.1 问题:如何选择概率分布?<a class=anchor href=#31-%e9%97%ae%e9%a2%98%e5%a6%82%e4%bd%95%e9%80%89%e6%8b%a9%e6%a6%82%e7%8e%87%e5%88%86%e5%b8%83>#</a></h3><p>假设我们对一个随机变量 $x$ 一无所知,只知道某些统计量的期望值:</p><p>$$
+\mathbb{E}[T_k(x)] = \alpha_k, \quad k = 1, \ldots, m
+$$</p><p>例如:</p><ul><li>只知道均值 $\mathbb{E}[x] = \mu$</li><li>只知道均值和二阶矩 $\mathbb{E}[x] = \mu, \mathbb{E}[x^2] = \sigma^2 + \mu^2$</li></ul><p><strong>问题</strong>: 在满足这些约束的所有概率分布中,我们应该选择哪一个?</p><p><strong>答案</strong>: 选择<strong>熵最大</strong>的分布。</p><hr><h3 id=32-熵与最大熵原理>3.2 熵与最大熵原理<a class=anchor href=#32-%e7%86%b5%e4%b8%8e%e6%9c%80%e5%a4%a7%e7%86%b5%e5%8e%9f%e7%90%86>#</a></h3><p>Shannon 熵定义为:</p><p>$$
+H[P] = -\int P(x) \log P(x) , dx
+$$</p><p>熵度量分布的"不确定性":</p><ul><li>均匀分布:熵最大 (最不确定)</li><li>Dirac delta 函数:熵为 0 (完全确定)</li></ul><p><strong>最大熵原理</strong> (Maximum Entropy Principle):</p><blockquote class=book-hint><p>在满足已知约束的前提下,选择熵最大的分布。</p></blockquote><p><strong>哲学依据</strong>: 这是"奥卡姆剃刀"的概率版本——<strong>不要假设你不知道的东西</strong>。给定约束,选择最"无偏"、最"保守"的分布,不引入任何额外的假设。</p><hr><h3 id=33-推导最大熵分布是指数族>3.3 推导:最大熵分布是指数族<a class=anchor href=#33-%e6%8e%a8%e5%af%bc%e6%9c%80%e5%a4%a7%e7%86%b5%e5%88%86%e5%b8%83%e6%98%af%e6%8c%87%e6%95%b0%e6%97%8f>#</a></h3><p><strong>优化问题</strong>:</p><p>$$
+\begin{aligned}
+\max_{P(x)} \quad & H[P] = -\int P(x) \log P(x) , dx \
+\text{s.t.} \quad & \int P(x) , dx = 1 \
+& \int P(x) T_k(x) , dx = \alpha_k, \quad k = 1, \ldots, m
+\end{aligned}
+$$</p><p>构造 <strong>Lagrange 泛函</strong>:</p><p>$$
+\mathcal{L}[P] = -\int P(x) \log P(x) , dx + \lambda_0 \left(\int P(x) , dx - 1\right) + \sum_{k=1}^m \lambda_k \left(\int P(x) T_k(x) , dx - \alpha_k\right)
+$$</p><p>对 $P(x)$ 做变分 (泛函导数):</p><p>$$
+\frac{\delta \mathcal{L}}{\delta P(x)} = -\log P(x) - 1 + \lambda_0 + \sum_{k=1}^m \lambda_k T_k(x)
+$$</p><p>令变分为零:</p><p>$$
+-\log P(x) - 1 + \lambda_0 + \sum_{k=1}^m \lambda_k T_k(x) = 0
+$$</p><p>解出 $\log P(x)$:</p><p>$$
+\log P(x) = -1 + \lambda_0 + \sum_{k=1}^m \lambda_k T_k(x)
+$$</p><p>指数化:</p><p>$$
+P(x) = \exp\left(-1 + \lambda_0 + \sum_{k=1}^m \lambda_k T_k(x)\right) = e^{\lambda_0 - 1} \exp\left(\sum_{k=1}^m \lambda_k T_k(x)\right)
+$$</p><p>利用归一化条件 $\int P(x) , dx = 1$ 确定常数项。定义:</p><p>$$
+A(\lambda) = 1 - \lambda_0 = \log \int \exp\left(\sum_{k=1}^m \lambda_k T_k(x)\right) dx
+$$</p><p>最终得到:</p><p>$$
+P(x) = \exp\left(\sum_{k=1}^m \lambda_k T_k(x) - A(\lambda)\right)
+$$</p><p>这正是指数族分布的标准形式 (取 $h(x) = 1$,$\eta = \lambda$)!</p><p><strong>结论</strong>:</p><p>$$
+\boxed{\text{最大熵分布} = \text{指数族分布}}
+$$</p><p>Lagrange 乘子 $\lambda$ 对应自然参数 $\eta$。 $\square$</p><hr><p><strong>意义</strong>:</p><p>指数族分布不是人为构造的,而是信息论的必然结果。给定矩约束,指数族是<strong>唯一最保守的选择</strong>。</p><hr><h3 id=34-例子-1高斯分布>3.4 例子 1:高斯分布<a class=anchor href=#34-%e4%be%8b%e5%ad%90-1%e9%ab%98%e6%96%af%e5%88%86%e5%b8%83>#</a></h3><p><strong>约束</strong>:只知道均值和方差,</p><p>$$
+\mathbb{E}[x] = \mu, \quad \mathbb{E}[x^2] = \sigma^2 + \mu^2
+$$</p><p><strong>充分统计量</strong>:</p><p>$$
+T(x) = \begin{bmatrix} x \ x^2 \end{bmatrix}
+$$</p><p><strong>最大熵分布</strong>:</p><p>$$
+P(x) = \exp(\lambda_1 x + \lambda_2 x^2 - A(\lambda))
+$$</p><p>配方:</p><p>$$
+\lambda_2 x^2 + \lambda_1 x = \lambda_2 \left(x + \frac{\lambda_1}{2\lambda_2}\right)^2 - \frac{\lambda_1^2}{4\lambda_2}
+$$</p><p>要使其是有效概率分布 (可积),必须 $\lambda_2 &lt; 0$。设:</p><p>$$
+\lambda_2 = -\frac{1}{2\sigma^2}, \quad \lambda_1 = \frac{\mu}{\sigma^2}
+$$</p><p>代入并整理,得到:</p><p>$$
+P(x) = \frac{1}{\sqrt{2\pi\sigma^2}} \exp\left(-\frac{(x-\mu)^2}{2\sigma^2}\right)
+$$</p><p><strong>结论</strong>: 高斯分布是给定均值和方差的最大熵分布。</p><p><strong>物理意义</strong>: 如果你只知道一个随机变量的均值和方差,你能做的最保守假设就是它服从高斯分布。这就是为什么高斯分布无处不在——<strong>不是因为自然"喜欢"高斯,而是因为我们通常只掌握有限的矩信息</strong>。</p><hr><h3 id=35-例子-2指数分布>3.5 例子 2:指数分布<a class=anchor href=#35-%e4%be%8b%e5%ad%90-2%e6%8c%87%e6%95%b0%e5%88%86%e5%b8%83>#</a></h3><p><strong>约束</strong> (假设 $x \geq 0$):</p><p>$$
+\mathbb{E}[x] = \mu
+$$</p><p><strong>充分统计量</strong>:</p><p>$$
+T(x) = x
+$$</p><p><strong>最大熵分布</strong>:</p><p>$$
+P(x) = \exp(\lambda x - A(\lambda))
+$$</p><p>归一化:</p><p>$$
+A(\lambda) = \log \int_0^\infty \exp(\lambda x) , dx
+$$</p><p>为使积分收敛,必须 $\lambda &lt; 0$。设 $\lambda = -1/\mu$,则:</p><p>$$
+\int_0^\infty \exp(-x/\mu) , dx = \mu
+$$</p><p>因此:</p><p>$$
+A(\lambda) = \log \mu = -\log(-\lambda)
+$$</p><p>最终分布:</p><p>$$
+P(x) = \frac{1}{\mu} \exp\left(-\frac{x}{\mu}\right)
+$$</p><p>这是<strong>指数分布</strong> $\text{Exp}(1/\mu)$。</p><p><strong>物理意义</strong>: 如果你只知道一个非负随机变量的均值,指数分布是最保守的选择。这解释了为什么等待时间、寿命等常服从指数分布——当我们对过程的细节一无所知时,指数分布是最自然的选择。</p><hr><h3 id=36-例子-3离散均匀分布>3.6 例子 3:离散均匀分布<a class=anchor href=#36-%e4%be%8b%e5%ad%90-3%e7%a6%bb%e6%95%a3%e5%9d%87%e5%8c%80%e5%88%86%e5%b8%83>#</a></h3><p><strong>约束</strong>:无约束 (除了归一化)。</p><p>在有限集合 ${x_1, \ldots, x_n}$ 上,最大熵分布是:</p><p>$$
+P(x_i) = \frac{1}{n}, \quad i = 1, \ldots, n
+$$</p><p>这是<strong>离散均匀分布</strong>。</p><p><strong>物理意义</strong>: 如果你对一个离散随机变量一无所知,最保守的假设就是等概率。</p><hr><h2 id=4-指数族分布与广义线性模型-glm>4. 指数族分布与广义线性模型 (GLM)<a class=anchor href=#4-%e6%8c%87%e6%95%b0%e6%97%8f%e5%88%86%e5%b8%83%e4%b8%8e%e5%b9%bf%e4%b9%89%e7%ba%bf%e6%80%a7%e6%a8%a1%e5%9e%8b-glm>#</a></h2><h3 id=41-问题线性回归与逻辑回归的统一>4.1 问题:线性回归与逻辑回归的统一<a class=anchor href=#41-%e9%97%ae%e9%a2%98%e7%ba%bf%e6%80%a7%e5%9b%9e%e5%bd%92%e4%b8%8e%e9%80%bb%e8%be%91%e5%9b%9e%e5%bd%92%e7%9a%84%e7%bb%9f%e4%b8%80>#</a></h3><p>看看两个经典模型:</p><p><strong>线性回归</strong>:</p><ul><li>模型:$y|x \sim \mathcal{N}(w^T x, \sigma^2)$</li><li>损失函数:最小二乘 $\sum (y_i - w^T x_i)^2$</li></ul><p><strong>逻辑回归</strong>:</p><ul><li>模型:$y|x \sim \text{Bernoulli}(\sigma(w^T x))$</li><li>损失函数:交叉熵 $-\sum [y_i \log \sigma(w^T x_i) + (1-y_i) \log(1-\sigma(w^T x_i))]$</li></ul><p>它们看起来完全不同!损失函数的形式天差地别。</p><p><strong>但它们本质相同</strong>——都是广义线性模型 (Generalized Linear Model, GLM)。</p><hr><h3 id=42-glm-的定义>4.2 GLM 的定义<a class=anchor href=#42-glm-%e7%9a%84%e5%ae%9a%e4%b9%89>#</a></h3><p><strong>广义线性模型</strong>由三部分组成:</p><p><strong>1. 随机成分</strong>: 响应变量 $y$ 服从指数族分布</p><p>$$
+P(y|x, w) = h(y) \exp\left(\eta(x, w) \cdot y - A(\eta(x, w))\right)
+$$</p><p>这里假设 $T(y) = y$,称为<strong>规范形式</strong> (Canonical Form)。</p><p><strong>2. 系统成分</strong>: 自然参数是输入的线性函数</p><p>$$
+\eta(x, w) = w^T x
+$$</p><p><strong>3. 连接函数</strong>: 自然参数 $\eta$ 与均值 $\mu = \mathbb{E}[y|x]$ 的关系</p><p>由定理 1:</p><p>$$
+\mu = \nabla_\eta A(\eta)
+$$</p><p>定义<strong>连接函数</strong> $g$:</p><p>$$
+\eta = g(\mu)
+$$</p><p>若 $g$ 使得 $\eta = w^T x$ 直接对应自然参数化,称为<strong>规范连接</strong> (Canonical Link)。对于规范形式的指数族,规范连接就是 $g = (\nabla_\eta A)^{-1}$。</p><hr><h3 id=43-核心推导glm-的统一梯度公式>4.3 核心推导:GLM 的统一梯度公式<a class=anchor href=#43-%e6%a0%b8%e5%bf%83%e6%8e%a8%e5%af%bcglm-%e7%9a%84%e7%bb%9f%e4%b8%80%e6%a2%af%e5%ba%a6%e5%85%ac%e5%bc%8f>#</a></h3><p>这是本章最激动人心的推导:<strong>无论分布是什么,梯度公式都一样</strong>。</p><p>给定数据 ${(x_i, y_i)}_{i=1}^N$,负对数似然为:</p><p>$$
+\mathcal{L}(w) = -\sum_{i=1}^N \log P(y_i|x_i, w) = -\sum_{i=1}^N \left[\eta_i y_i - A(\eta_i) + \log h(y_i)\right]
+$$</p><p>其中 $\eta_i = w^T x_i$。去掉与 $w$ 无关的项:</p><p>$$
+\mathcal{L}(w) = -\sum_{i=1}^N \left[w^T x_i \cdot y_i - A(w^T x_i)\right] + \text{const}
+$$</p><p>对 $w$ 求梯度,使用链式法则:</p><p>$$
+\nabla_w \mathcal{L}(w) = -\sum_{i=1}^N \left[y_i x_i - \frac{\partial A(\eta_i)}{\partial \eta_i} \cdot \frac{\partial \eta_i}{\partial w}\right]
+$$</p><p>注意:</p><ul><li>$\frac{\partial \eta_i}{\partial w} = \frac{\partial (w^T x_i)}{\partial w} = x_i$</li><li>$\frac{\partial A(\eta_i)}{\partial \eta_i} = \mathbb{E}[y_i|x_i] = \mu_i$ (由定理 1)</li></ul><p>代入:</p><p>$$
+\nabla_w \mathcal{L}(w) = -\sum_{i=1}^N (y_i - \mu_i) x_i
+$$</p><p><strong>GLM 的核心公式</strong>:</p><p>$$
+\boxed{\nabla_w \mathcal{L}(w) = -\sum_{i=1}^N (y_i - \mu_i) x_i}
+$$</p><p>其中 $\mu_i = \mathbb{E}[y_i|x_i] = \nabla_\eta A(\eta_i)|_{\eta_i = w^T x_i}$。</p><hr><p><strong>公式的物理意义</strong>:</p><p>$$
+\nabla_w \mathcal{L}(w) = -\sum_{i=1}^N \underbrace{(y_i - \mu_i)}<em>{\text{残差}} \cdot \underbrace{x_i}</em>{\text{特征}}
+$$</p><p>梯度是<strong>残差与特征的加权和</strong>。</p><p><strong>关键观察</strong>: 无论分布是什么 (高斯、伯努利、泊松),梯度都是这个形式!唯一的差异在于:</p><ul><li>$\mu_i = \nabla_\eta A(\eta_i)$ 的具体计算</li><li>而这由对数配分函数 $A(\eta)$ 完全决定</li></ul><p><strong>这不仅仅是巧合</strong>——这是指数族分布的几何本质。对数配分函数的导数性质统一了所有回归模型的优化。</p><hr><h3 id=44-hessian-矩阵凸性保证>4.4 Hessian 矩阵:凸性保证<a class=anchor href=#44-hessian-%e7%9f%a9%e9%98%b5%e5%87%b8%e6%80%a7%e4%bf%9d%e8%af%81>#</a></h3><p>继续对梯度求导:</p><p>$$
+\nabla^2_w \mathcal{L}(w) = \sum_{i=1}^N \frac{\partial \mu_i}{\partial w} x_i^T
+$$</p><p>使用链式法则:</p><p>$$
+\frac{\partial \mu_i}{\partial w} = \frac{\partial \mu_i}{\partial \eta_i} \cdot \frac{\partial \eta_i}{\partial w} = \frac{\partial \mu_i}{\partial \eta_i} \cdot x_i
+$$</p><p>注意 $\mu_i = \nabla_\eta A(\eta_i)$,因此:</p><p>$$
+\frac{\partial \mu_i}{\partial \eta_i} = \nabla^2_\eta A(\eta_i) = \text{Var}[y_i|x_i]
+$$</p><p>(由定理 2,对于标量情况协方差就是方差)</p><p>代入:</p><p>$$
+\nabla^2_w \mathcal{L}(w) = \sum_{i=1}^N \text{Var}[y_i|x_i] \cdot x_i x_i^T
+$$</p><p>以矩阵形式:</p><p>$$
+\nabla^2_w \mathcal{L}(w) = X^T W X
+$$</p><p>其中:</p><ul><li>$X \in \mathbb{R}^{N \times d}$ 是设计矩阵 (第 $i$ 行是 $x_i^T$)</li><li>$W = \text{diag}(\text{Var}[y_1|x_1], \ldots, \text{Var}[y_N|x_N]) \in \mathbb{R}^{N \times N}$ 是权重矩阵</li></ul><p><strong>凸性</strong>:</p><p>因为方差 $\text{Var}[y_i|x_i] > 0$,且假设 $X$ 列满秩,Hessian 正定:</p><p>$$
+\nabla^2_w \mathcal{L}(w) \succ 0
+$$</p><p>因此:</p><p>$$
+\boxed{\mathcal{L}(w) \text{ 是严格凸函数}}
+$$</p><p><strong>推论</strong>:</p><ol><li>MLE 存在且唯一</li><li>梯度下降保证收敛到全局最优</li><li>无局部最优问题</li></ol><p>这是指数族分布送给统计学习的第二个礼物 (第一个是统一的梯度公式)。</p><hr><h3 id=45-例子-1线性回归-高斯-glm>4.5 例子 1:线性回归 (高斯 GLM)<a class=anchor href=#45-%e4%be%8b%e5%ad%90-1%e7%ba%bf%e6%80%a7%e5%9b%9e%e5%bd%92-%e9%ab%98%e6%96%af-glm>#</a></h3><p><strong>模型</strong>: $y|x \sim \mathcal{N}(w^T x, \sigma^2)$</p><p><strong>指数族参数</strong>:</p><ul><li>自然参数:$\eta = w^T x$</li><li>对数配分函数:$A(\eta) = \frac{\sigma^2 \eta^2}{2}$</li><li>均值参数:$\mu = \nabla_\eta A(\eta) = \sigma^2 \eta = w^T x$</li></ul><p><strong>梯度</strong>:</p><p>$$
+\nabla_w \mathcal{L}(w) = -\sum_{i=1}^N (y_i - w^T x_i) x_i
+$$</p><p>这正是最小二乘的梯度!</p><p><strong>Hessian</strong>:</p><p>$$
+\text{Var}[y_i|x_i] = \sigma^2 \quad (\text{常数})
+$$</p><p>因此:</p><p>$$
+\nabla^2_w \mathcal{L}(w) = \sigma^2 X^T X
+$$</p><p>这正是线性回归的 Hessian。</p><hr><h3 id=46-例子-2逻辑回归-伯努利-glm>4.6 例子 2:逻辑回归 (伯努利 GLM)<a class=anchor href=#46-%e4%be%8b%e5%ad%90-2%e9%80%bb%e8%be%91%e5%9b%9e%e5%bd%92-%e4%bc%af%e5%8a%aa%e5%88%a9-glm>#</a></h3><p><strong>模型</strong>: $y|x \sim \text{Bernoulli}(\sigma(w^T x))$</p><p><strong>指数族参数</strong>:</p><ul><li>自然参数:$\eta = w^T x$</li><li>对数配分函数:$A(\eta) = \log(1 + e^\eta)$</li><li>均值参数:$\mu = \nabla_\eta A(\eta) = \frac{e^\eta}{1+e^\eta} = \sigma(\eta) = \sigma(w^T x)$</li></ul><p><strong>梯度</strong>:</p><p>$$
+\nabla_w \mathcal{L}(w) = -\sum_{i=1}^N (y_i - \sigma(w^T x_i)) x_i
+$$</p><p>这正是逻辑回归的梯度!</p><p><strong>Hessian</strong>:</p><p>$$
+\text{Var}[y_i|x_i] = \mu_i(1-\mu_i) = \sigma(w^T x_i)(1-\sigma(w^T x_i))
+$$</p><p>因此:</p><p>$$
+\nabla^2_w \mathcal{L}(w) = X^T W X, \quad W = \text{diag}(\mu_1(1-\mu_1), \ldots, \mu_N(1-\mu_N))
+$$</p><p>这正是逻辑回归的 Hessian (也是 IRLS 算法的权重矩阵)。</p><hr><h3 id=47-例子-3泊松回归-泊松-glm>4.7 例子 3:泊松回归 (泊松 GLM)<a class=anchor href=#47-%e4%be%8b%e5%ad%90-3%e6%b3%8a%e6%9d%be%e5%9b%9e%e5%bd%92-%e6%b3%8a%e6%9d%be-glm>#</a></h3><p><strong>模型</strong>: $y|x \sim \text{Poisson}(e^{w^T x})$</p><p><strong>指数族参数</strong>:</p><ul><li>自然参数:$\eta = w^T x$</li><li>对数配分函数:$A(\eta) = e^\eta$</li><li>均值参数:$\mu = \nabla_\eta A(\eta) = e^\eta = e^{w^T x}$</li></ul><p><strong>梯度</strong>:</p><p>$$
+\nabla_w \mathcal{L}(w) = -\sum_{i=1}^N (y_i - e^{w^T x_i}) x_i
+$$</p><p><strong>Hessian</strong>:</p><p>$$
+\text{Var}[y_i|x_i] = \mu_i = e^{w^T x_i}
+$$</p><p>因此:</p><p>$$
+\nabla^2_w \mathcal{L}(w) = X^T W X, \quad W = \text{diag}(e^{w^T x_1}, \ldots, e^{w^T x_N})
+$$</p><hr><h3 id=48-glm-的几何理解>4.8 GLM 的几何理解<a class=anchor href=#48-glm-%e7%9a%84%e5%87%a0%e4%bd%95%e7%90%86%e8%a7%a3>#</a></h3><p>所有 GLM 都在做同一件事:</p><ol><li>通过线性组合 $w^T x$ 构造自然参数 $\eta$</li><li>通过 $\mu = \nabla_\eta A(\eta)$ 将 $\eta$ 映射到均值参数空间</li><li>优化目标是最小化观测值 $y$ 与预测均值 $\mu$ 之间的"距离"</li></ol><p>不同的 GLM 只是选择了不同的分布 (即不同的 $A(\eta)$),从而对应不同的均值-方差关系:</p><ul><li>高斯:$\text{Var}[y|x] = \sigma^2$ (常数)</li><li>伯努利:$\text{Var}[y|x] = \mu(1-\mu)$ (二次函数)</li><li>泊松:$\text{Var}[y|x] = \mu$ (均值-方差相等)</li></ul><p>但优化的本质是相同的:<strong>所有 GLM 的梯度都是残差与特征的线性组合</strong>。</p><hr><h2 id=5-总结>5. 总结<a class=anchor href=#5-%e6%80%bb%e7%bb%93>#</a></h2><h3 id=51-主要结论>5.1 主要结论<a class=anchor href=#51-%e4%b8%bb%e8%a6%81%e7%bb%93%e8%ae%ba>#</a></h3><p><strong>1. 指数族的标准形式</strong>:</p><p>$$
+P(x|\eta) = h(x) \exp\left(\eta^T T(x) - A(\eta)\right)
+$$</p><p>这是概率分布的"元素周期表",涵盖了几乎所有常用的分布。</p><p><strong>2. 对数配分函数的核心性质</strong>:</p><p>$$
+\begin{aligned}
+\nabla_\eta A(\eta) &= \mathbb{E}[T(x)] \quad \text{(一阶导数 = 期望)} \
+\nabla^2_\eta A(\eta) &= \text{Cov}[T(x)] \quad \text{(二阶导数 = 协方差)} \
+\mathcal{I}(\eta) &= \nabla^2_\eta A(\eta) \quad \text{(Fisher 信息)}
+\end{aligned}
+$$</p><p>这些性质使得 MLE 成为凸优化问题,保证了优化的稳定性和唯一性。</p><p><strong>3. 最大熵原理</strong>:</p><p>给定矩约束,指数族分布是<strong>唯一</strong>最大熵分布:</p><p>$$
+\max H[P] \quad \text{s.t.} \quad \mathbb{E}[T_k(x)] = \alpha_k \quad \Rightarrow \quad P(x) = \exp\left(\sum \lambda_k T_k(x) - A(\lambda)\right)
+$$</p><p>这从信息论角度解释了为什么指数族无处不在:它们是最保守、最无偏的选择。</p><p><strong>4. GLM 的统一公式</strong>:</p><p>所有广义线性模型共享同一个梯度:</p><p>$$
+\nabla_w \mathcal{L}(w) = -\sum_{i=1}^N (y_i - \mu_i) x_i
+$$</p><p>其中 $\mu_i = \nabla_\eta A(\eta_i)|_{\eta_i = w^T x_i}$。</p><p>线性回归、逻辑回归、泊松回归本质相同,只是选择了不同的 $A(\eta)$。</p><hr><h3 id=52-为什么指数族如此重要>5.2 为什么指数族如此重要?<a class=anchor href=#52-%e4%b8%ba%e4%bb%80%e4%b9%88%e6%8c%87%e6%95%b0%e6%97%8f%e5%a6%82%e6%ad%a4%e9%87%8d%e8%a6%81>#</a></h3><ol><li><strong>统计学</strong>: 充分统计量、MLE 的矩匹配、Fisher 信息</li><li><strong>信息论</strong>: 最大熵原理</li><li><strong>优化</strong>: 凸性保证</li><li><strong>机器学习</strong>: GLM、变分推断的基础 (将在第5章讨论)</li></ol><p>指数族不仅仅是一个数学定义,而是:</p><ul><li>统计学的基础</li><li>信息论的体现</li><li>优化的福音</li><li>机器学习的支柱</li></ul><p>当你遇到一个新的概率模型时,首先问:<strong>它是指数族吗?</strong> 如果是,你就拥有了这一整套强大的工具。</p><hr><h3 id=53-关键公式速查表>5.3 关键公式速查表<a class=anchor href=#53-%e5%85%b3%e9%94%ae%e5%85%ac%e5%bc%8f%e9%80%9f%e6%9f%a5%e8%a1%a8>#</a></h3><table><thead><tr><th>性质</th><th>公式</th><th>备注</th></tr></thead><tbody><tr><td>标准形式</td><td>$P(x \mid \eta) = h(x) \exp(\eta^T T(x) - A(\eta))$</td><td>定义</td></tr><tr><td>对数配分函数</td><td>$A(\eta) = \log \int h(x) \exp(\eta^T T(x)) , dx$</td><td>归一化</td></tr><tr><td>一阶导数</td><td>$\nabla_\eta A(\eta) = \mathbb{E}[T(x)]$</td><td>期望</td></tr><tr><td>二阶导数</td><td>$\nabla^2_\eta A(\eta) = \text{Cov}[T(x)]$</td><td>协方差</td></tr><tr><td>Fisher 信息</td><td>$\mathcal{I}(\eta) = \nabla^2_\eta A(\eta)$</td><td>可估计性</td></tr><tr><td>MLE 条件</td><td>$\nabla_\eta A(\hat{\eta}) = \bar{T}$</td><td>矩匹配</td></tr><tr><td>GLM 梯度</td><td>$\nabla_w \mathcal{L} = -\sum (y_i - \mu_i) x_i$</td><td>统一公式</td></tr><tr><td>最大熵</td><td>$P(x) = \exp(\sum \lambda_k T_k(x) - A(\lambda))$</td><td>无偏选择</td></tr><tr><td>凸性</td><td>$A(\eta) \text{ 是凸函数}$</td><td>优化保证</td></tr></tbody></table><hr><h2 id=参考文献>参考文献<a class=anchor href=#%e5%8f%82%e8%80%83%e6%96%87%e7%8c%ae>#</a></h2><ol><li><strong>Bishop, C. M.</strong> (2006). <em>Pattern Recognition and Machine Learning</em>. Springer, Chapter 2.</li><li><strong>Murphy, K. P.</strong> (2022). <em>Probabilistic Machine Learning: An Introduction</em>. MIT Press, Chapter 3.</li><li><strong>Wainwright, M. J., & Jordan, M. I.</strong> (2008). <em>Graphical Models, Exponential Families, and Variational Inference</em>. Foundations and Trends in Machine Learning, 1(1-2), 1-305.</li><li><strong>Jaynes, E. T.</strong> (1957). Information Theory and Statistical Mechanics. <em>Physical Review</em>, 106(4), 620-630.</li><li><strong>Nelder, J. A., & Wedderburn, R. W. M.</strong> (1972). Generalized Linear Models. <em>Journal of the Royal Statistical Society: Series A</em>, 135(3), 370-384.</li></ol></article><div style="margin-top:2rem;border-top:1px solid #e5e7eb;padding-top:1rem;font-size:.85rem;color:#6b7280;text-align:center">[统计组件仅在生产环境显示]</div><div class=giscus style=margin-top:2rem></div><script src=https://giscus.app/client.js data-repo=LordFoxFairy/LordFoxFairy.github.io data-repo-id=R_kgDOQ-JRGA data-category=Announcements data-category-id=DIC_kwDOQ-JRGM4C1PDC data-mapping=pathname data-strict=0 data-reactions-enabled=1 data-emit-metadata=0 data-input-position=bottom data-theme=preferred_color_scheme data-lang=zh-CN data-loading=lazy crossorigin=anonymous async></script><footer class=book-footer><div class="flex flex-wrap justify-between"><div></div><div></div></div><div class="flex flex-wrap justify-between"><span><a href=/notebooks/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/%E7%AC%AC03%E7%AB%A0_svd%E4%B8%8E%E7%9F%A9%E9%98%B5%E5%88%86%E8%A7%A3/ class="flex align-center"><img src=/icons/backward.svg class=book-icon alt=Backward>
+<span>第03章 SVD与矩阵分解</span>
+</a></span><span><a href=/notebooks/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/%E7%AC%AC05%E7%AB%A0_%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92/ class="flex align-center"><span>第05章 线性回归</span>
+<img src=/icons/forward.svg class=book-icon alt=Forward></a></span></div><div class=book-comments></div><script>(function(){document.querySelectorAll("pre:has(code)").forEach(e=>{e.addEventListener("click",e.focus),e.addEventListener("copy",function(t){if(t.preventDefault(),navigator.clipboard){const t=window.getSelection().toString()||e.textContent;navigator.clipboard.writeText(t)}})})})()</script></footer><label for=menu-control class="hidden book-menu-overlay"></label></div><aside class=book-toc><div class=book-toc-content><nav id=TableOfContents><ul><li><a href=#前言>前言</a></li><li><a href=#目录>目录</a></li><li><a href=#引言>引言</a></li><li><a href=#1-指数族分布的定义>1. 指数族分布的定义</a><ul><li><a href=#11-从伯努利分布开始>1.1 从伯努利分布开始</a></li><li><a href=#12-高斯分布的改写>1.2 高斯分布的改写</a></li><li><a href=#13-指数族的标准形式>1.3 指数族的标准形式</a></li><li><a href=#14-对数配分函数的定义>1.4 对数配分函数的定义</a></li><li><a href=#15-常见分布的指数族形式>1.5 常见分布的指数族形式</a></li></ul></li><li><a href=#2-指数族分布的性质>2. 指数族分布的性质</a><ul><li><a href=#21-一阶导数期望>2.1 一阶导数:期望</a></li><li><a href=#22-二阶导数方差>2.2 二阶导数:方差</a></li><li><a href=#23-fisher-信息矩阵>2.3 Fisher 信息矩阵</a></li><li><a href=#24-最大似然估计的矩匹配>2.4 最大似然估计的矩匹配</a></li></ul></li><li><a href=#3-指数族分布与最大熵>3. 指数族分布与最大熵</a><ul><li><a href=#31-问题如何选择概率分布>3.1 问题:如何选择概率分布?</a></li><li><a href=#32-熵与最大熵原理>3.2 熵与最大熵原理</a></li><li><a href=#33-推导最大熵分布是指数族>3.3 推导:最大熵分布是指数族</a></li><li><a href=#34-例子-1高斯分布>3.4 例子 1:高斯分布</a></li><li><a href=#35-例子-2指数分布>3.5 例子 2:指数分布</a></li><li><a href=#36-例子-3离散均匀分布>3.6 例子 3:离散均匀分布</a></li></ul></li><li><a href=#4-指数族分布与广义线性模型-glm>4. 指数族分布与广义线性模型 (GLM)</a><ul><li><a href=#41-问题线性回归与逻辑回归的统一>4.1 问题:线性回归与逻辑回归的统一</a></li><li><a href=#42-glm-的定义>4.2 GLM 的定义</a></li><li><a href=#43-核心推导glm-的统一梯度公式>4.3 核心推导:GLM 的统一梯度公式</a></li><li><a href=#44-hessian-矩阵凸性保证>4.4 Hessian 矩阵:凸性保证</a></li><li><a href=#45-例子-1线性回归-高斯-glm>4.5 例子 1:线性回归 (高斯 GLM)</a></li><li><a href=#46-例子-2逻辑回归-伯努利-glm>4.6 例子 2:逻辑回归 (伯努利 GLM)</a></li><li><a href=#47-例子-3泊松回归-泊松-glm>4.7 例子 3:泊松回归 (泊松 GLM)</a></li><li><a href=#48-glm-的几何理解>4.8 GLM 的几何理解</a></li></ul></li><li><a href=#5-总结>5. 总结</a><ul><li><a href=#51-主要结论>5.1 主要结论</a></li><li><a href=#52-为什么指数族如此重要>5.2 为什么指数族如此重要?</a></li><li><a href=#53-关键公式速查表>5.3 关键公式速查表</a></li></ul></li><li><a href=#参考文献>参考文献</a></li></ul></nav></div></aside></main></body></html>
